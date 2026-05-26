@@ -77,6 +77,9 @@ O código é **incremental**: cada aula tem sua própria branch contendo apenas 
 
 Detalhes completos: [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
+Lista fixa das **12 tarefas** (espelha as Issues do GitHub, para consulta offline):
+[`docs/TAREFAS.md`](docs/TAREFAS.md).
+
 ## Como o aluno deve usar este repositório
 
 Guia rápido (passo a passo, comandos e pré-requisitos): [`docs/HOW_TO_USE.md`](docs/HOW_TO_USE.md).
