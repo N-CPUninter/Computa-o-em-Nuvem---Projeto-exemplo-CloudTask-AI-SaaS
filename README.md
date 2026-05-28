@@ -141,12 +141,6 @@ cloudtask-ai-saas/
 
 > Em branches anteriores à aula 12, só existem as pastas e arquivos correspondentes ao conteúdo já visto.
 
-## Banner do arquivo README.md
-
-Utilize o arquivo [`Banner_Github_NCPU.pptx`](.readme_docs/Banner_Github_NCPU.pptx) da pasta `.readme_docs` para regenerar o `Banner_Github_NCPU.png` com **Título:** `CloudTask AI SaaS` e **Subtítulo:** `Computação em Nuvem`.
-
-Após editar: **Arquivo → Exportar → Alterar o tipo de arquivo → PNG**. Salve com o mesmo nome (`Banner_Github_NCPU.png`) na pasta `.readme_docs/`.
-
 ## Contribuições
 
 Se você tiver alguma sugestão, correção de bugs ou melhorias para este projeto didático, sinta-se à vontade para abrir uma issue ou enviar uma pull request. Sua contribuição é muito bem-vinda!
