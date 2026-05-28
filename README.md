@@ -5,9 +5,9 @@
 
 <!-- Título e breve descrição do repositório -->
 <div align="center">
-  <h1>CloudTask AI SaaS — Aula 2</h1>
-  <p><b>Branch <code>semana-01-fastapi-docker</code> — estado pós Aula 2.</b></p>
-  <p>API FastAPI + Dockerfile multi-target + <b>Docker Compose</b> + devcontainer (agora consumindo o compose).</p>
+  <h1>CloudTask AI SaaS — Semana 1 (Aulas 1 e 2)</h1>
+  <p><b>Branch <code>semana-01-fastapi-docker</code> — cobre as Aulas 1 e 2.</b></p>
+  <p><b>FastAPI mínimo + Dockerfile + devcontainer</b> (Aula 1) e <b>Docker Compose</b> (Aula 2).</p>
 </div>
 
 <p align="center">
@@ -18,24 +18,30 @@
   <a href="https://www.docker.com/" title="Docker"><img src="https://github.com/get-icon/geticon/raw/master/icons/docker-icon.svg" alt="Docker" height="21px"></a>
 </p>
 
-## O que foi entregue nesta aula
+## O que foi feito nesta semana
+
+Esta branch contém **as duas aulas da Semana 1**. Abaixo, o que cada aula entregou.
+
+### Aula 1 — Início da API (FastAPI mínimo)
+
+- `app/main.py` — instância FastAPI + endpoint `GET /` (metadados).
+- `app/api/routes_health.py` — endpoint `GET /health` (liveness).
+- `app/schemas.py` — modelos Pydantic (`HealthResponse`, `RootResponse`) com exemplos no Swagger.
+- `requirements.txt` (produção) e `requirements-dev.txt` (debug, lint, hot-reload).
+- `Dockerfile` **multi-target** (`dev` / `prod`) com tini, usuário não-root e HEALTHCHECK.
+- `.dockerignore`, `.devcontainer/devcontainer.json`, `.vscode/launch.json`.
+- `pyproject.toml` (ruff / pytest / mypy).
+
+### Aula 2 — Containerização com Docker Compose
 
 - `docker-compose.yml` com o serviço `api` (target `dev` do Dockerfile, hot-reload, volume `.:/app`).
 - `docker-compose.prod.yml` (override) simulando a imagem `prod` localmente.
-- `.devcontainer/devcontainer.json` **migrado** de `build` direto para `dockerComposeFile` — o compose é agora a única fonte de verdade do ambiente.
-- README atualizado.
+- `.devcontainer/devcontainer.json` **migrado** de `build` direto para `dockerComposeFile` — o compose passa a ser a única fonte de verdade do ambiente.
 
 > **Por que migrar o devcontainer para o compose já na Aula 2?**
-> Na Aula 3 vamos adicionar o serviço `db` (PostgreSQL 16, compatível com Amazon RDS for PostgreSQL) ao mesmo compose. Com a migração feita agora, **nada muda** no `devcontainer.json` na Aula 3 — basta editar o compose, e o aluno ganha o banco automaticamente ao reabrir o devcontainer.
+> Na Aula 3 (Semana 2) adicionamos o serviço `db` (PostgreSQL 16, compatível com Amazon RDS) ao mesmo compose. Com a migração feita aqui, **nada muda** no `devcontainer.json` depois — basta editar o compose, e o aluno ganha o banco automaticamente ao reabrir o devcontainer.
 
-## O que continua igual (Aula 1)
-
-- `app/main.py` + `app/api/routes_health.py` (endpoints `GET /` e `GET /health`).
-- `app/schemas.py` (modelos Pydantic com exemplos para o Swagger).
-- `Dockerfile` multi-target (`dev` / `prod`).
-- `.dockerignore`, `requirements.txt`, `requirements-dev.txt`.
-- `pyproject.toml` (ruff/pytest/mypy).
-- `.vscode/launch.json` para debug.
+Versão da API ao fim da semana: **`0.1.0`**.
 
 ## Pré-requisitos
 
