@@ -67,6 +67,15 @@ git config --global --unset-all safe.directory 2>/dev/null || true
 git config --global --add safe.directory /app
 git config --global --add safe.directory '*'
 
+# core.fileMode=false: ignora mudanças de BIT DE EXECUÇÃO dos arquivos.
+# POR QUÊ: o bind mount do Windows para o container Linux apresenta as
+# permissões/exec-bit de forma diferente do que o git gravou no índice. Sem
+# isso, o git do container marca TODOS os arquivos como "modificados" (só por
+# causa do modo), poluindo o `git status`. fileMode=false faz o git comparar
+# apenas o CONTEÚDO, não o modo. RISCO: ínfimo — em containers raramente
+# dependemos do exec-bit versionado (e os scripts que precisam já têm +x no índice).
+git config --global core.fileMode false
+
 echo "==> [post-create] Configurando o terminal (oh-my-zsh: plugins + tema)..."
 # Plugins externos (não vêm no oh-my-zsh). Clonados na pasta custom do omz.
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
