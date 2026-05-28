@@ -216,3 +216,7 @@ logs/
 # Lock file de features do VS Code Dev Containers (gerado automaticamente)
 .devcontainer/devcontainer-lock.json
 
+
+# Material do PROFESSOR (uso interno) — nunca versionado, alunos não devem ver.
+# Os arquivos ficam só no computador do professor e persistem entre branches.
+docs/material_do_professor/
