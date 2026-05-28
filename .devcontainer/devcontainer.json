@@ -70,8 +70,13 @@
     // mais leve e evita Docker-dentro-de-Docker (privilegiado, pesado).
     // RISCO: o container ganha acesso ao Docker do host — aceitável em
     // ambiente de desenvolvimento/aula.
+    //
+    // "moby": false  -> instala o Docker CE oficial em vez do "moby-cli".
+    //   POR QUÊ: a imagem base python:3.11-slim hoje é Debian 13 (trixie), que
+    //   NÃO tem os pacotes moby-cli. Com moby:true o build FALHA no trixie.
+    //   O Docker CE oficial funciona normalmente.
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-      "moby": true
+      "moby": false
     }
   },
 
