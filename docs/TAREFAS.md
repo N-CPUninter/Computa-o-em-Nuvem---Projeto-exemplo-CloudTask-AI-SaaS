@@ -13,7 +13,7 @@
 |  1 | FastAPI mínimo                                    | `semana-01-fastapi-docker`     | #1  |
 |  2 | Docker e Docker Compose                           | `semana-01-fastapi-docker`     | #2  |
 |  3 | PostgreSQL + CRUD                                 | `semana-02-rds-vpc-seguranca`  | #3  |
-|  4 | Config, segurança e VPC/IAM (conceito)            | `semana-02-rds-vpc-seguranca`  | #4  |
+|  4 | Config, segurança, HTTPS e health/ready (Postgres) | `semana-02-rds-vpc-seguranca`  | #4  |
 |  5 | Upload S3 (com fallback local)                    | `semana-03-s3-kubernetes`      | #5  |
 |  6 | Kubernetes local (Kind / Minikube)                | `semana-03-s3-kubernetes`      | #6  |
 |  7 | Publicar imagem no Amazon ECR                     | `semana-04-eks-aws`            | #7  |
@@ -201,59 +201,79 @@ POSTGRES_DB=cloudtask
 
 ---
 
-## Aula 4 — Configuração por ambiente, segurança e arquitetura cloud (conceitos)
+## Aula 4 — Config por ambiente, segurança, HTTPS e health/ready (PostgreSQL)
 
 **Branch:** `semana-02-rds-vpc-seguranca` · **Issue:** #4
 **Labels:** `semana-2`, `aula-04`, `security`, `vpc`, `env-config`, `documentation`
 
 ### Objetivo didático
-Mostrar que código e infraestrutura precisam ser pensados juntos: separar configuração do código, nunca versionar credenciais e introduzir os principais conceitos de rede e segurança da AWS — sem ainda criar recursos na nuvem.
+Separar configuração do código, nunca versionar credenciais, **expor a API com HTTPS de forma simples e segura** e introduzir rede/segurança da AWS. Todo código e config desta aula vem **comentado explicando motivo, impacto e risco** de cada decisão (público iniciante).
 
 ### Pré-requisitos
 - CRUD da Aula 3 funcionando
 
 ### Entregas (checklist)
 
-**Configuração no código**
-- [ ] Criar `app/core/config.py` usando `pydantic-settings` (`BaseSettings`).
-- [ ] Mover **todas** as variáveis sensíveis/ambientais para `.env`:
+**1. Configuração no código**
+- [ ] `app/core/config.py` com `pydantic-settings` (`BaseSettings`).
+- [ ] Mover variáveis sensíveis/ambientais para `.env`:
   - `APP_ENV` (development | staging | production)
-  - `APP_PORT`
-  - `SECRET_KEY` (gerar com `secrets.token_urlsafe(32)`)
-  - `DATABASE_URL`
-  - `LOG_LEVEL`
-- [ ] Atualizar `app/main.py` e demais módulos para consumir `settings`.
-- [ ] Garantir que `.env` está no `.gitignore` e que `.env.example` cobre as novas variáveis.
+  - `APP_PORT`, `SECRET_KEY` (gerar com `secrets.token_urlsafe(32)`), `DATABASE_URL`, `LOG_LEVEL`
+  - `FORCE_HTTPS` (bool — **única chave** que liga o comportamento de produção)
+  - `TRUSTED_HOSTS` (lista de hosts aceitos)
+- [ ] `app/main.py` e módulos consomem `settings`.
+- [ ] `.env` no `.gitignore`; `.env.example` cobre as novas variáveis (comentado).
 
-**Documentação conceitual (criar em `docs/`)**
-- [ ] `docs/aws-networking.md` cobrindo:
-  - VPC
-  - Subnet pública e subnet privada
-  - Security Group (SG)
-  - Internet Gateway (IG)
-  - NAT Gateway
-  - Bastion host
-  - Diagrama simples (pode ser ASCII art ou Mermaid)
-- [ ] `docs/security-model.md` cobrindo:
-  - IAM (usuários, grupos, roles, policies)
-  - MFA
-  - Modelo de responsabilidade compartilhada AWS
-  - Criptografia em repouso e em trânsito
-  - Boas práticas para credenciais (sem chaves no código!)
-  - Introdução à LGPD (referenciada novamente na Aula 12)
+**2. Readiness check com PostgreSQL**
+- [ ] `GET /health/ready` em `routes_health.py`: executa `SELECT 1` no banco.
+  - `200 {"status":"ready","db":"ok"}` quando o banco responde.
+  - `503 {"status":"not_ready","db":"down"}` quando falha (capturar exceção).
+- [ ] `GET /health` continua **liveness puro** (NÃO toca no banco).
+- [ ] Schema Pydantic `ReadyResponse` com exemplos no Swagger.
+- [ ] `description=` Markdown explicando **por que** liveness e readiness são separados.
 
-> ⚠️ **Não é necessário provisionar nada na AWS nesta aula.** O foco é entender os conceitos.
+**3. HTTPS / TLS — modelo simples e seguro**
+- [ ] Container sobe uvicorn com **`--proxy-headers`** por padrão (e documentar `--forwarded-allow-ips`).
+- [ ] App **NÃO** usa `HTTPSRedirectMiddleware` quando atrás de ALB (o redirect é da borda — ver riscos). Middleware só no caso raro de app exposta direto sem proxy.
+- [ ] Header **HSTS** somente quando `APP_ENV != development`, `max-age` modesto, **sem `preload`**.
+- [ ] `TrustedHostMiddleware` lendo `TRUSTED_HOSTS`.
+- [ ] HTTPS local **opcional** com **`mkcert`** (não `openssl` cru): CA local → sem aviso no browser.
+- [ ] `docs/https-tls.md` didático.
+
+**4. Documentação conceitual (criar em `docs/`)**
+- [ ] `docs/aws-networking.md`: VPC, subnet pública/privada, SG, IG, NAT, bastion + diagrama (Mermaid/ASCII).
+- [ ] `docs/security-model.md`: IAM, MFA, responsabilidade compartilhada, criptografia em repouso e **em trânsito** (liga com `https-tls.md`), boas práticas de credenciais, intro LGPD.
+
+> ⚠️ **Nada é provisionado na AWS nesta aula.** HTTPS em prod é exercitado de fato na Aula 8 (ALB + ACM no EKS). Aqui: configurar o app + documentar.
+
+### Decisões e riscos (devem aparecer comentados no código/config)
+
+| Decisão | Por quê | Impacto | Risco se ignorar |
+| --- | --- | --- | --- |
+| TLS termina **na borda** (ALB), não no app | "App fala HTTP, a porta fala HTTPS" | Cert vive no ALB, não na imagem | Cert na imagem complica e não renova |
+| Redirect HTTP→HTTPS **só no ALB** (Aula 8) | Um lugar declarativo | App fica simples | App redireciona + probe HTTP interno = **loop → pod "unhealthy"** |
+| App só `--proxy-headers` + HSTS | Confia no `X-Forwarded-Proto` | URLs/redirects corretos | Sem `--proxy-headers`, FastAPI gera **loop** |
+| Dev local = **HTTP puro** (`FORCE_HTTPS=false`) | Evita fricção de cert local | Aluno foca no código | Forçar HTTPS local = avisos de browser |
+| HTTPS local via **mkcert** | CA local → sem aviso | Aluno *vê* HTTPS | openssl self-signed assusta iniciante |
+| Cert prod = **AWS ACM** | Grátis e **auto-renova** | Zero gestão de renovação | Cert manual expira e derruba o site |
+| HSTS **sem preload**, só prod | preload é **irreversível** | Browser força HTTPS | preload errado trava o domínio por meses |
+
+### Dois caminhos (por causa do Learner Lab)
+- **Ideal (conta/domínio próprios):** ACM + domínio + ALB Ingress + `ssl-redirect` → HTTPS real ponta a ponta.
+- **Learner Lab (sem domínio):** ACM precisa de DNS → provável não dar. Demonstrar HTTPS **localmente com mkcert** (todos veem funcionando) e, no EKS, expor HTTP no ELB documentando "aqui entraria o ACM em produção real".
 
 ### Critérios de aceite
-- Aplicação continua funcionando após a refatoração de configuração.
+- `GET /health` responde sem tocar no banco; `GET /health/ready` reflete o estado real do PostgreSQL (200 up / 503 down).
+- Atrás de proxy com `FORCE_HTTPS=true`, **sem loop** de redirect (probes OK).
 - `git grep -i "password\|secret" app/` não retorna valores reais hardcoded.
-- `docs/aws-networking.md` e `docs/security-model.md` existem e estão completos.
-- README aponta para os novos documentos.
+- `docs/aws-networking.md`, `docs/security-model.md`, `docs/https-tls.md` existem, completos e **comentados de forma didática**.
 
 ### Referências
 - [ROADMAP.md — Aula 4](ROADMAP.md)
 - pydantic-settings: <https://docs.pydantic.dev/latest/concepts/pydantic_settings/>
-- AWS Well-Architected — pilar Segurança: <https://aws.amazon.com/architecture/well-architected/>
+- Starlette middlewares: <https://www.starlette.io/middleware/>
+- mkcert: <https://github.com/FiloSottile/mkcert>
+- AWS ACM: <https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html>
 
 ---
 
@@ -416,41 +436,57 @@ Mostrar como a imagem Docker construída localmente é enviada para um **registr
 **Labels:** `semana-4`, `aula-08`, `eks`, `aws`, `kubernetes`
 
 ### Objetivo didático
-Levar a aplicação para um cluster Kubernetes **gerenciado** na AWS (EKS), com alta disponibilidade e Load Balancer público. Mostrar a diferença para o cluster local da Aula 6.
+Levar a aplicação para um cluster Kubernetes **gerenciado** (EKS), com alta disponibilidade, Load Balancer público e **HTTPS na borda** (configurado conceitualmente na Aula 4). Todo manifest vem **comentado explicando motivo, impacto e risco**.
 
 ### Pré-requisitos
 - Imagem `cloudtask-api` publicada no ECR (Aula 7)
-- AWS CLI v2 + `kubectl` + `eksctl` (opcional, mas recomendado)
-- Cluster EKS já existente (fornecido pelo professor ou criado via Learner Lab)
-- `aws eks update-kubeconfig --name <cluster> --region <region>` executado
+- AWS CLI v2 + `kubectl` + `eksctl`
+- Cluster EKS acessível (`aws eks update-kubeconfig --name <cluster> --region <region>`)
 
 ### Entregas (checklist)
-- [ ] Criar a pasta `infra/k8s/aws/`:
-  - [ ] `deployment-eks.yaml` — Deployment apontando para a imagem **no ECR** (`<account>.dkr.ecr.<region>.amazonaws.com/cloudtask-api:latest`).
-  - [ ] `service-loadbalancer.yaml` — Service do tipo `LoadBalancer` (cria um ELB clássico/NLB).
-  - [ ] *(opcional)* `ingress-optional.yaml` — exemplo de Ingress com ALB Controller (apenas didático).
-  - [ ] `README.md` da pasta explicando passo a passo do deploy.
-- [ ] Garantir que o Deployment configura:
-  - **2 ou mais réplicas**.
-  - `resources.requests` e `resources.limits` simples (ex.: 100m CPU / 128Mi RAM).
-  - `readinessProbe` apontando para `/health`.
-- [ ] Aplicar e validar:
-  ```bash
-  kubectl apply -f infra/k8s/aws/
-  kubectl get pods -n cloudtask
-  kubectl get svc -n cloudtask        # ver EXTERNAL-IP do LoadBalancer
-  ```
+
+**1. Manifests base** em `infra/k8s/aws/`
+- [ ] `deployment-eks.yaml` — imagem do ECR, **2+ réplicas**, `resources.requests/limits` simples.
+  - `livenessProbe` → `/health` (não toca o banco).
+  - `readinessProbe` → `/health/ready` (checa o PostgreSQL — criado na Aula 4).
+- [ ] `service-loadbalancer.yaml` — Service `LoadBalancer` (cria ELB/NLB).
+- [ ] `README.md` da pasta, passo a passo + **como destruir** ao final.
+
+**2. HTTPS na borda — dois caminhos**
+
+*Caminho ideal (conta/domínio próprios):*
+- [ ] ALB Ingress com ACM:
+  - `alb.ingress.kubernetes.io/certificate-arn: <ARN do ACM>`
+  - `alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'`
+  - `alb.ingress.kubernetes.io/ssl-redirect: '443'` (redirect na **borda**)
+
+*Caminho Learner Lab (sem domínio):*
+- [ ] Documentar a limitação (ACM exige DNS) e expor **HTTP no ELB**, com comentário "aqui entraria o ACM em produção real".
+- [ ] Aluno já viu HTTPS funcionando localmente via **mkcert** (Aula 4) — entendimento coberto.
+
+- [ ] Garantir pods recebendo `X-Forwarded-Proto`; `FORCE_HTTPS` coerente com o ambiente.
+
+### Decisões e riscos (devem aparecer comentados nos manifests)
+
+| Decisão | Por quê | Impacto | Risco se ignorar |
+| --- | --- | --- | --- |
+| `ssl-redirect` no **ALB**, não no app | Redirect num só lugar | App fica simples | App redirecionar + probe HTTP interno = **loop → pod unhealthy** |
+| `readinessProbe` em `/health/ready` | Só recebe tráfego se o banco responde | Rollout espera o DB | Probe em `/health` deixa pod receber tráfego com banco fora |
+| `livenessProbe` em `/health` | Reinicia só se o processo travou | Auto-healing correto | Liveness no banco reinicia o pod por falha do DB (errado) |
+| Cert no **ACM**, colado ao ALB | Grátis, auto-renova | Sem gestão de cert | Cert manual expira e derruba HTTPS |
+| `t3.small`/`t3.medium`, 2 nós | Learner Lab tem teto de crédito | Custo baixo | Nós grandes/muitos queimam o crédito |
 
 ### Critérios de aceite
-- Pods `Running` no EKS, lendo a imagem do ECR.
-- Service `LoadBalancer` recebe `EXTERNAL-IP` e responde em `/health`.
-- README de `infra/k8s/aws/` explica como destruir os recursos ao final (`kubectl delete -f ...`) para evitar custos.
+- Pods `Running` lendo a imagem do ECR.
+- `/health` e `/health/ready` respondem via Service/Ingress.
+- Caminho ideal: `https://` funciona e `http://` redireciona (301) para `https://`.
+- README explica destruição dos recursos.
 
-### Observação importante sobre custos
-> ⚠️ Recursos do EKS, Load Balancer e nodes EC2 **geram cobrança**. Sempre destrua o que não estiver usando, principalmente em conta pessoal.
+> ⚠️ **Custos:** EKS + ELB + EC2 cobram por hora **ligados**. Sempre `kubectl delete -f infra/k8s/aws/` e `eksctl delete cluster` ao terminar.
 
 ### Referências
 - [ROADMAP.md — Aula 8](ROADMAP.md)
+- AWS Load Balancer Controller (Ingress + ACM): <https://kubernetes-sigs.github.io/aws-load-balancer-controller/>
 - EKS user guide: <https://docs.aws.amazon.com/eks/latest/userguide/>
 - eksctl: <https://eksctl.io/>
 
