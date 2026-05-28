@@ -78,17 +78,21 @@
   // ---------------------------------------------------------------------------
   // Mounts extras: credenciais compartilhadas host <-> container.
   //
-  // O truque `${localEnv:HOME}${localEnv:USERPROFILE}` resolve o diretório do
-  // usuário em qualquer SO: no Windows HOME é vazio e USERPROFILE existe; no
-  // macOS/Linux é o contrário. Assim o mesmo arquivo funciona para todos.
+  // Usamos ${localEnv:USERPROFILE} = pasta do usuário no WINDOWS (ex.:
+  // C:\Users\seu-nome). Funciona em todo Windows, INDEPENDENTE de a variável
+  // HOME estar setada ou não.
   //
-  // CUIDADO: a pasta ~/.aws precisa EXISTIR no host antes de abrir o
-  // devcontainer (senão o Docker cria uma pasta vazia pertencente ao root).
+  // ⚠️ macOS / Linux: troque ${localEnv:USERPROFILE} por ${localEnv:HOME} nas
+  //    duas linhas abaixo (no Windows HOME pode estar setada e quebrar o path;
+  //    por isso NÃO concatenamos as duas variáveis).
+  //
+  // CUIDADO: as pastas ~/.aws e ~/.kube precisam EXISTIR no host antes de abrir
+  // o devcontainer (senão o Docker cria pastas vazias pertencentes ao root).
   // O post-create ajusta o dono por garantia.
   // ---------------------------------------------------------------------------
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/appuser/.aws,type=bind,consistency=cached",
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.kube,target=/home/appuser/.kube,type=bind,consistency=cached"
+    "source=${localEnv:USERPROFILE}/.aws,target=/home/appuser/.aws,type=bind,consistency=cached",
+    "source=${localEnv:USERPROFILE}/.kube,target=/home/appuser/.kube,type=bind,consistency=cached"
   ],
 
   // Instala eksctl + AWS CDK e ajusta permissões das credenciais montadas.

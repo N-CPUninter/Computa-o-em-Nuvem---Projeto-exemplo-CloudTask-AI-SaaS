@@ -9,7 +9,10 @@
 # (ver Dockerfile). POR QUÊ sudo aqui: instalar binários em /usr/local/bin e
 # pacotes npm globais exige escrita em diretórios do sistema.
 # =============================================================================
-set -euo pipefail
+# NÃO usamos `set -e`: se a instalação de uma ferramenta falhar (ex.: sem rede
+# no primeiro build), queremos AVISAR mas NÃO abortar a criação do container.
+# Um container que sobe "quase pronto" é melhor que um que não sobe.
+set -uo pipefail
 
 echo "==> [post-create] Ajustando dono das credenciais montadas (host -> container)..."
 # Se a pasta foi criada pelo Docker como root (host não tinha ~/.aws ou ~/.kube),
@@ -28,11 +31,13 @@ case "${ARCH_RAW}" in
   *)                 ARCH="amd64" ;;
 esac
 EKSCTL_URL="https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_${ARCH}.tar.gz"
-curl -sSL "${EKSCTL_URL}" | sudo tar -xz -C /usr/local/bin
-sudo chmod +x /usr/local/bin/eksctl
+# '|| echo' impede que uma falha de rede aborte a criação do container.
+(curl -sSL "${EKSCTL_URL}" | sudo tar -xz -C /usr/local/bin && sudo chmod +x /usr/local/bin/eksctl) \
+  || echo "AVISO: falha ao instalar eksctl (instale depois com: bash .devcontainer/post-create.sh)"
 
 echo "==> [post-create] Instalando AWS CDK (npm global)..."
-sudo npm install -g aws-cdk
+sudo npm install -g aws-cdk \
+  || echo "AVISO: falha ao instalar aws-cdk (instale depois com: sudo npm install -g aws-cdk)"
 
 echo "==> [post-create] Versões instaladas:"
 # '|| true' para não abortar caso alguma ferramenta ainda não esteja no PATH.
