@@ -54,16 +54,19 @@ def _test_database_url() -> str:
 def _ensure_database_exists(db_url: str) -> None:
     """Cria o banco de testes caso ele ainda não exista.
 
-    Conecta no banco administrativo ``postgres`` (sempre presente) em modo
-    AUTOCOMMIT — POR QUÊ: ``CREATE DATABASE`` não pode rodar dentro de uma
-    transação. Se o banco já existe, não faz nada.
+    Conecta no banco ``template1`` em modo AUTOCOMMIT — POR QUÊ:
+        * ``CREATE DATABASE`` não pode rodar dentro de uma transação.
+        * ``template1`` está SEMPRE presente em qualquer cluster PostgreSQL
+          (diferente do banco ``postgres``, que pode não ser criado quando
+          ``POSTGRES_DB`` define outro nome na imagem oficial).
+    Se o banco de testes já existe, não faz nada.
 
     Args:
         db_url: URL do banco de testes desejado.
     """
     url = make_url(db_url)
     admin_engine = create_engine(
-        url.set(database="postgres"), isolation_level="AUTOCOMMIT"
+        url.set(database="template1"), isolation_level="AUTOCOMMIT"
     )
     try:
         with admin_engine.connect() as conn:
