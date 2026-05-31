@@ -102,24 +102,35 @@ alias kctx='kubectl config current-context 2>/dev/null || echo "(sem cluster k8s
 alias whoaws='aws sts get-caller-identity 2>/dev/null || echo "(sem credencial AWS ativa)"'
 
 # ----- Prompt "transient" ----------------------------------------------------
-# Quando o aluno aperta Enter, a linha do comando que acabou de rodar é redesenhada
-# com um prompt MÍNIMO ("> comando"), deixando o histórico do terminal limpo. A
-# próxima linha (aguardando comando) volta a ter o prompt cheio do tema fino-time.
-# POR QUÊ: prompt longo de 2 linhas a cada comando vira poluição visual no log.
-_cloudtask_transient_accept() {
-    local _ORIG_PROMPT="$PROMPT"
-    local _ORIG_RPROMPT="$RPROMPT"
-    # `%F{8}` = cinza (subdued), `%D{...}` = data/hora pelo zsh.
-    # Formato: [YYYY-MM-DD HH:MM:SS] > comando
+# Quando o aluno aperta Enter, a linha do comando rodada é redesenhada com um
+# prompt MÍNIMO ("[data] > comando"), deixando o histórico do terminal limpo.
+# A próxima linha (aguardando comando) volta a ter o prompt cheio do tema.
+#
+# POR QUÊ via `zle-line-finish` + `precmd` (e não bindkey ^M): a abordagem
+# anterior (bindkey no Enter) sobrescrevia o widget `accept-line`, quebrando os
+# MARKERS de shell integration do VS Code (sticky scroll deixava de funcionar).
+# Esta versão NÃO mexe em accept-line: usa `zle-line-finish` (disparado quando
+# o usuário submete a linha) para trocar o PROMPT e redesenhar, e `precmd`
+# (antes do próximo prompt) para restaurar o PROMPT cheio.
+#
+# Capturamos o PROMPT/RPROMPT atual (já com os markers do shell integration,
+# carregado acima) para preservá-los na restauração.
+typeset -g _CT_FULL_PROMPT="$PROMPT"
+typeset -g _CT_FULL_RPROMPT="$RPROMPT"
+
+_ct_transient_line_finish() {
     PROMPT='%F{8}[%D{%Y-%m-%d %H:%M:%S}]%f > '
     RPROMPT=''
     zle reset-prompt
-    PROMPT="$_ORIG_PROMPT"
-    RPROMPT="$_ORIG_RPROMPT"
-    zle accept-line
 }
-zle -N _cloudtask_transient_accept
-bindkey '^M' _cloudtask_transient_accept   # Enter (carriage return)
+zle -N zle-line-finish _ct_transient_line_finish
+
+autoload -Uz add-zsh-hook
+_ct_transient_restore_precmd() {
+    PROMPT="$_CT_FULL_PROMPT"
+    RPROMPT="$_CT_FULL_RPROMPT"
+}
+add-zsh-hook precmd _ct_transient_restore_precmd
 
 # Mensagem de boas-vindas (ajuda o aluno a se localizar).
 echo "CloudTask AI SaaS — devcontainer. App em http://localhost:8000/docs | testes: tv | logs: dclogs"
