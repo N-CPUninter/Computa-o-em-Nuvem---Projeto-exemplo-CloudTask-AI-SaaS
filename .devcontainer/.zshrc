@@ -81,5 +81,23 @@ alias kctx='kubectl config current-context 2>/dev/null || echo "(sem cluster k8s
 # Mostra a identidade/conta AWS ativa — útil nas Aulas 5,7-11.
 alias whoaws='aws sts get-caller-identity 2>/dev/null || echo "(sem credencial AWS ativa)"'
 
+# ----- Prompt "transient" ----------------------------------------------------
+# Quando o aluno aperta Enter, a linha do comando que acabou de rodar é redesenhada
+# com um prompt MÍNIMO ("> comando"), deixando o histórico do terminal limpo. A
+# próxima linha (aguardando comando) volta a ter o prompt cheio do tema fino-time.
+# POR QUÊ: prompt longo de 2 linhas a cada comando vira poluição visual no log.
+_cloudtask_transient_accept() {
+    local _ORIG_PROMPT="$PROMPT"
+    local _ORIG_RPROMPT="$RPROMPT"
+    PROMPT='> '
+    RPROMPT=''
+    zle reset-prompt
+    PROMPT="$_ORIG_PROMPT"
+    RPROMPT="$_ORIG_RPROMPT"
+    zle accept-line
+}
+zle -N _cloudtask_transient_accept
+bindkey '^M' _cloudtask_transient_accept   # Enter (carriage return)
+
 # Mensagem de boas-vindas (ajuda o aluno a se localizar).
 echo "CloudTask AI SaaS — devcontainer. App em http://localhost:8000/docs | testes: tv | logs: dclogs"
