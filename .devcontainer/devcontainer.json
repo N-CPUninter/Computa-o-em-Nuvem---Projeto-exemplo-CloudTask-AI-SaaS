@@ -24,7 +24,7 @@
 //
 // Como usar:
 //   1. (Uma vez) crie a pasta ~/.aws no host e cole as credenciais do Learner
-//      Lab em ~/.aws/credentials (ver docs/aws-academy-setup.md, Parte 3).
+//      Lab em ~/.aws/credentials (ver docs/praticas/00-setup-inicial-e-aws-academy.md, Parte 3).
 //   2. F1 → "Dev Containers: Rebuild and Reopen in Container".
 //      (Rebuild porque adicionamos features e mounts novos.)
 // =============================================================================

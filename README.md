@@ -45,7 +45,7 @@ Esta branch contém **as duas aulas da Semana 2**. Abaixo, o que cada aula entre
   - **HSTS** enviado quando `FORCE_HTTPS=true` e fora de `development` (sem `preload`).
   - `TrustedHostMiddleware` (hosts via `TRUSTED_HOSTS`).
   - `HTTPSRedirectMiddleware` só no caso sem proxy (`FORCE_HTTPS=true` e `BEHIND_PROXY=false`).
-- Docs de segurança: `docs/https-tls.md`, `docs/aws-networking.md`, `docs/security-model.md`.
+- Docs de segurança: `docs/conceitos/https-tls.md`, `docs/conceitos/aws-networking.md`, `docs/conceitos/security-model.md`.
 - `.env.example` cobre `FORCE_HTTPS`, `BEHIND_PROXY`, `TRUSTED_HOSTS`.
 
 Versão da API ao fim da semana: **`0.2.0`**.
@@ -88,7 +88,7 @@ updated_at   datetime    (atualizado pelo banco a cada PUT)
 | Docker Desktop          | 4.30          | API + PostgreSQL em containers |
 | VS Code + Dev Containers| 1.90 / 0.380  | Abrir o projeto no container   |
 
-> Nunca usou terminal/Docker? Veja [`docs/aws-academy-setup.md`](docs/aws-academy-setup.md).
+> Nunca usou terminal/Docker? Veja [`docs/praticas/00-setup-inicial-e-aws-academy.md`](docs/praticas/00-setup-inicial-e-aws-academy.md).
 
 ## Como rodar
 
@@ -212,7 +212,7 @@ docker compose -p cloudtask-test \
 
 Quer saber o que são `cloudtask-api:dev` / `:prod` / `:test`, como o
 `Dockerfile` multi-stage funciona e a diferença entre os três arquivos de
-Compose? Veja o guia: [`docs/docker-explained.md`](docs/docker-explained.md).
+Compose? Veja o guia: [`docs/conceitos/docker-explained.md`](docs/conceitos/docker-explained.md).
 
 Resumo rápido:
 
@@ -246,9 +246,9 @@ Resumo rápido:
 - Issue da aula: [#4 — Aula 4](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/4)
 - Lista de tarefas: [`docs/TAREFAS.md`](docs/TAREFAS.md)
 - Guia geral: [`docs/HOW_TO_USE.md`](docs/HOW_TO_USE.md)
-- Setup do zero: [`docs/aws-academy-setup.md`](docs/aws-academy-setup.md)
-- Segurança: [`docs/security-model.md`](docs/security-model.md) · [`docs/aws-networking.md`](docs/aws-networking.md) · [`docs/https-tls.md`](docs/https-tls.md)
-- Docker explicado: [`docs/docker-explained.md`](docs/docker-explained.md)
+- Setup do zero: [`docs/praticas/00-setup-inicial-e-aws-academy.md`](docs/praticas/00-setup-inicial-e-aws-academy.md)
+- Segurança: [`docs/conceitos/security-model.md`](docs/conceitos/security-model.md) · [`docs/conceitos/aws-networking.md`](docs/conceitos/aws-networking.md) · [`docs/conceitos/https-tls.md`](docs/conceitos/https-tls.md)
+- Docker explicado: [`docs/conceitos/docker-explained.md`](docs/conceitos/docker-explained.md)
 - SQLAlchemy 2.0: <https://docs.sqlalchemy.org/en/20/>
 
 ## Licença
