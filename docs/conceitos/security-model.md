@@ -45,7 +45,7 @@ credenciais **temporárias e rotativas** automaticamente — nada de chave fixa
 para vazar.
 
 > No **Learner Lab** você não cria roles novas; usa a **`LabRole`** pronta
-> (ver `aws-academy-setup.md`).
+> (ver `../praticas/00-setup-inicial-e-aws-academy.md`).
 
 ---
 

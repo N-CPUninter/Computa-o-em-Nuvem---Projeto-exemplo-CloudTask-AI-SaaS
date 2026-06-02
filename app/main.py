@@ -199,7 +199,7 @@ app.include_router(routes_uploads.router)
 # ---------------------------------------------------------------------------
 # Middlewares de segurança de transporte (HTTPS) — Aula 4.
 #
-# Estratégia (ver docs/https-tls.md):
+# Estratégia (ver docs/conceitos/https-tls.md):
 #   * O TLS termina na BORDA (ALB na nuvem; mkcert/proxy em dev). O app fala
 #     HTTP internamente e confia no cabeçalho X-Forwarded-Proto (uvicorn sobe
 #     com --proxy-headers — ver Dockerfile/compose).

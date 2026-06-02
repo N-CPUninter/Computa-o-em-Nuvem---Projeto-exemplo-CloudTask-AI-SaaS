@@ -42,7 +42,7 @@ Esta branch contém **as duas aulas da Semana 3**. Abaixo, o que cada aula entre
 - `app/schemas.py` ganhou `UploadResponse` com exemplos no Swagger.
 - `app/core/config.py` ganhou `STORAGE_MODE`, `LOCAL_UPLOADS_DIR`, `AWS_REGION`, `S3_BUCKET_NAME`, `S3_ENDPOINT_URL` (opcional), `S3_PRESIGNED_URL_EXPIRES`.
 - Testes (`tests/test_uploads.py`): fluxo feliz, 404, 413, 422, extensão preservada.
-- `docs/s3-efs-datalake.md` — guia didático S3 × EFS × Data Lake.
+- `docs/conceitos/s3-efs-datalake.md` — guia didático S3 × EFS × Data Lake.
 
 ### Aula 6 — Kubernetes local com Kind (a vir)
 
@@ -139,10 +139,10 @@ credenciais reais ou LocalStack); validar manualmente.
 
 - Issue da aula: [#5 — Aula 5](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/5)
 - Lista de tarefas: [`docs/TAREFAS.md`](docs/TAREFAS.md)
-- Setup do zero: [`docs/aws-academy-setup.md`](docs/aws-academy-setup.md)
-- **S3 explicado**: [`docs/s3-efs-datalake.md`](docs/s3-efs-datalake.md)
-- Segurança: [`docs/security-model.md`](docs/security-model.md) · [`docs/aws-networking.md`](docs/aws-networking.md) · [`docs/https-tls.md`](docs/https-tls.md)
-- Docker: [`docs/docker-explained.md`](docs/docker-explained.md)
+- Setup do zero: [`docs/praticas/00-setup-inicial-e-aws-academy.md`](docs/praticas/00-setup-inicial-e-aws-academy.md)
+- **S3 explicado**: [`docs/conceitos/s3-efs-datalake.md`](docs/conceitos/s3-efs-datalake.md)
+- Segurança: [`docs/conceitos/security-model.md`](docs/conceitos/security-model.md) · [`docs/conceitos/aws-networking.md`](docs/conceitos/aws-networking.md) · [`docs/conceitos/https-tls.md`](docs/conceitos/https-tls.md)
+- Docker: [`docs/conceitos/docker-explained.md`](docs/conceitos/docker-explained.md)
 
 ## Licença
 

@@ -130,7 +130,7 @@ VS Code: "abra meu editor **dentro** do serviço `api`". Resultado:
 - O VS Code constrói/usa a imagem `dev` e sobe `api` + `db`.
 - O terminal integrado já é o Linux do container.
 - As **features** adicionam AWS CLI, kubectl, Node, docker (ver
-  `aws-academy-setup.md`).
+  `../praticas/00-setup-inicial-e-aws-academy.md`).
 - Com `overrideCommand: false`, o `uvicorn --reload` **sobe sozinho** →
   acesse `http://localhost:8000/docs`.
 
@@ -172,6 +172,6 @@ docker ps                                   # containers rodando
 
 ## Referências
 
-- [`HOW_TO_USE.md`](HOW_TO_USE.md) · [`aws-academy-setup.md`](aws-academy-setup.md)
+- [`HOW_TO_USE.md`](../HOW_TO_USE.md) · [`00-setup-inicial-e-aws-academy.md`](../praticas/00-setup-inicial-e-aws-academy.md)
 - Multi-stage builds: <https://docs.docker.com/build/building/multi-stage/>
 - Compose merge/override: <https://docs.docker.com/compose/multiple-compose-files/>
