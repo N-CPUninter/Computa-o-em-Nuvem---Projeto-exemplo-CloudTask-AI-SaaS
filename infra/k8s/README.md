@@ -29,9 +29,11 @@ Manifests do **cluster Kubernetes local com Kind** para a Aula 6 da Semana 3.
 # 1. Cluster Kind
 kind create cluster --config infra/k8s/kind-config.yaml
 
-# 2. Build da imagem dev e carga no Kind
-docker build --target dev -t cloudtask-api:dev .
-kind load docker-image cloudtask-api:dev --name cloudtask
+# 2. Build da imagem prod (código embutido) e carga no Kind
+#    POR QUÊ prod e não dev: o target dev NÃO copia app/ (espera volume do
+#    devcontainer). No cluster não há volume → ModuleNotFoundError.
+docker build --target prod -t cloudtask-api:prod .
+kind load docker-image cloudtask-api:prod --name cloudtask
 
 # 3. Secret real a partir do template
 cp infra/k8s/secret.example.yaml infra/k8s/secret.yaml

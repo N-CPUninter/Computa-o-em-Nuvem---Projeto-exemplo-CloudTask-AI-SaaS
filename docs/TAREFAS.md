@@ -349,7 +349,7 @@ Apresentar Kubernetes: pods, deployments, services, replicas e auto-healing. Rod
   - [ ] `configmap.yaml` — variáveis não-sensíveis.
   - [ ] `secret.example.yaml` — modelo de Secret (sem valores reais; o real fica fora do repo).
 - [ ] Construir a imagem localmente e carregá-la no cluster:
-  - Kind: `kind load docker-image cloudtask-api:dev --name cloudtask`
+  - Kind: `kind load docker-image cloudtask-api:prod --name cloudtask` (use o target `prod` — a imagem `dev` não embute o código, espera volume)
   - Minikube: `eval $(minikube docker-env)` antes do `docker build`.
 - [ ] Aplicar tudo: `kubectl apply -f infra/k8s/`.
 - [ ] Documentar no `infra/k8s/README.md`:
@@ -361,8 +361,8 @@ Apresentar Kubernetes: pods, deployments, services, replicas e auto-healing. Rod
 ### Comandos esperados
 ```bash
 kind create cluster --name cloudtask
-docker build -t cloudtask-api:dev .
-kind load docker-image cloudtask-api:dev --name cloudtask
+docker build --target prod -t cloudtask-api:prod .
+kind load docker-image cloudtask-api:prod --name cloudtask
 kubectl apply -f infra/k8s/
 kubectl get pods -n cloudtask
 kubectl port-forward -n cloudtask svc/cloudtask-api 8000:8000
