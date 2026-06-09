@@ -112,19 +112,29 @@ kubectl get nodes
 ## 3. Carregar a imagem da API no Kind
 
 Kind não puxa de Docker Hub automaticamente para imagens que **não existem
-ali**. Como `cloudtask-api:dev` é uma imagem local, precisamos **importar
+ali**. Como `cloudtask-api:prod` é uma imagem local, precisamos **importar
 no cluster**:
 
 ```bash
 # Build (no HOST — usa o mesmo Docker daemon do Kind)
-docker build --target dev -t cloudtask-api:dev .
+docker build --target prod -t cloudtask-api:prod .
 
 # Load no cluster Kind
-kind load docker-image cloudtask-api:dev --name cloudtask
+kind load docker-image cloudtask-api:prod --name cloudtask
 ```
 
 > 💡 **Sem este `kind load`**, o Pod ficaria em `ErrImagePull` tentando
-> baixar `cloudtask-api:dev` do Docker Hub (onde não existe).
+> baixar `cloudtask-api:prod` do Docker Hub (onde não existe).
+
+> ⚠️ **Por que `prod` e não `dev`?** O target `dev` do Dockerfile **não
+> embute o código** (`app/`): ele espera o código montado por **volume**,
+> coisa que o devcontainer faz mas o cluster Kind **não**. Rodar a imagem
+> `dev` no cluster derruba o Pod em **`CrashLoopBackOff`** com
+> `ModuleNotFoundError: No module named 'app'`, porque o `uvicorn
+> app.main:app` não encontra o pacote. O target `prod` faz
+> `COPY app/ /app/app/` — imagem autossuficiente, que é o que um cluster
+> precisa. (Custo: sem `--reload`/hot-reload — mas no cluster o código é
+> imutável de qualquer forma.)
 
 ---
 
@@ -303,7 +313,8 @@ kind delete cluster --name cloudtask
 | Erro | Causa | Fix |
 | --- | --- | --- |
 | `error: error loading config file ... no such file` | rodou comando fora da raiz do repo | rode no diretório onde está `infra/k8s/` |
-| Pod `ErrImagePull` `cloudtask-api:dev` | esqueceu `kind load docker-image` | `docker build --target dev -t cloudtask-api:dev . && kind load docker-image cloudtask-api:dev --name cloudtask` |
+| Pod `ErrImagePull` `cloudtask-api:prod` | esqueceu `kind load docker-image` | `docker build --target prod -t cloudtask-api:prod . && kind load docker-image cloudtask-api:prod --name cloudtask` |
+| Pod `CrashLoopBackOff` + log `ModuleNotFoundError: No module named 'app'` | carregou a imagem `dev` (sem código embutido) no cluster | rebuild com `--target prod` (ver §3): `docker build --target prod -t cloudtask-api:prod . && kind load docker-image cloudtask-api:prod --name cloudtask` |
 | Pod `Init:CrashLoopBackOff` (init container) | Postgres travou no startup | `kubectl logs -n cloudtask pod/postgres-... -c postgres` — provavelmente senha mal codificada em base64 |
 | `dial tcp ...:30080: connect: connection refused` | `extraPortMappings` faltou no kind-config | recrie o cluster com `--config infra/k8s/kind-config.yaml` |
 | API responde 500 ao chamar `/tasks` | `DATABASE_URL` errada no Secret | confira o base64; veja log: `kubectl logs -n cloudtask -l app=api` |

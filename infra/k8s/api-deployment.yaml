@@ -5,14 +5,19 @@
 #   * 2 réplicas: didático para ver o Service balanceando entre Pods.
 #   * RollingUpdate: deploy novo levanta Pods novos antes de derrubar os
 #     velhos — zero downtime (com stateless apps como esta).
-#   * Image `cloudtask-api:dev` LOCAL — carregamos no Kind com
-#     `kind load docker-image cloudtask-api:dev`. POR QUÊ não puxar do ECR aqui:
+#   * Image `cloudtask-api:prod` LOCAL — carregamos no Kind com
+#     `kind load docker-image cloudtask-api:prod`. POR QUÊ não puxar do ECR aqui:
 #     Aula 6 é local. Aula 7 muda para ECR.
+#   * POR QUÊ `prod` e NÃO `dev`: o target `dev` do Dockerfile NÃO embute o
+#     código (`app/`) — ele espera o código montado por VOLUME (devcontainer
+#     faz isso). No cluster não há volume, então `uvicorn app.main:app`
+#     falharia com `ModuleNotFoundError: No module named 'app'` →
+#     CrashLoopBackOff. O target `prod` faz `COPY app/ /app/app/`, então a
+#     imagem é autossuficiente — é o que um cluster precisa.
 #   * `imagePullPolicy: IfNotPresent`: garante que ele USE a imagem carregada
 #     pelo `kind load` em vez de tentar puxar do Docker Hub.
-#   * `command` MANTÉM o CMD da imagem dev (uvicorn --reload). POR QUÊ:
-#     padronizar com o que o devcontainer já faz; código vem da imagem,
-#     não há volume.
+#   * CMD da imagem prod = uvicorn SEM --reload (sem hot-reload no cluster;
+#     código é imutável, baked na imagem).
 #
 # DATABASE_URL: composta a partir do Secret (user, password) e ConfigMap
 # (host, db). Mostra ao aluno os DOIS objetos em ação.
@@ -56,7 +61,7 @@ spec:
                 secretKeyRef: { name: cloudtask-secrets, key: POSTGRES_USER }
       containers:
         - name: api
-          image: cloudtask-api:dev
+          image: cloudtask-api:prod
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
