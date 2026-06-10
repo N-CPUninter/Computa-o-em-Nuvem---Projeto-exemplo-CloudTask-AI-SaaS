@@ -38,11 +38,21 @@ Saída deve ter `"Account"`, `"Arn"`. Se der `Unable to locate credentials`:
 
 Nomes de bucket são **globais** na AWS — escolha algo único:
 
+**Linux/macOS (bash):**
 ```bash
 export BUCKET=cloudtask-uploads-$(whoami)-$(date +%s)
 echo $BUCKET
 
 aws s3 mb s3://$BUCKET --region us-east-1
+```
+
+**Windows (PowerShell):**
+```powershell
+# nome do bucket deve ser minúsculo e sem espaços
+$BUCKET = "cloudtask-uploads-$($env:USERNAME.ToLower())-$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())"
+echo $BUCKET
+
+aws s3 mb "s3://$BUCKET" --region us-east-1
 ```
 
 > 💡 **POR QUÊ `us-east-1`?** Região default do Learner Lab. Se mudar, edite

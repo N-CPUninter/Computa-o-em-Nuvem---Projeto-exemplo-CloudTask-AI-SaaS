@@ -59,9 +59,18 @@ aws configure set region us-east-1
 > **Quando:** Aula 5. **Já coberto** na prática [`06-uploads-modo-s3.md`](06-uploads-modo-s3.md).
 > Aqui só lembramos o resumo.
 
+**Linux/macOS (bash):**
 ```bash
 export BUCKET=cloudtask-uploads-$(whoami)-$(date +%s)
 aws s3 mb s3://$BUCKET --region us-east-1
+echo "Bucket: $BUCKET"
+```
+
+**Windows (PowerShell):**
+```powershell
+# nome do bucket deve ser minúsculo e sem espaços
+$BUCKET = "cloudtask-uploads-$($env:USERNAME.ToLower())-$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())"
+aws s3 mb "s3://$BUCKET" --region us-east-1
 echo "Bucket: $BUCKET"
 ```
 
@@ -134,6 +143,7 @@ No Learner Lab o CodeBuild não consegue clonar o GitHub (sem
 **empacotar o código num zip, subir num bucket S3 e apontar o CodeBuild
 para esse zip**.
 
+**Linux/macOS (bash):**
 ```bash
 # 0. (uma vez) descobrir o ACCOUNT_ID — usado aqui e na §3
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -151,11 +161,24 @@ aws s3 cp /tmp/source.zip s3://$SRC_BUCKET/source.zip
 aws s3 ls s3://$SRC_BUCKET/
 ```
 
-> 💡 **Windows sem `zip`?** No PowerShell use
-> `Compress-Archive -Path * -DestinationPath "$env:TEMP\source.zip" -Force`
-> (apague a pasta `.git` antes para não inflar o zip) e depois
-> `aws s3 cp "$env:TEMP\source.zip" s3://$SRC_BUCKET/source.zip`. O resto
-> dos comandos `aws` é igual nos dois shells.
+**Windows (PowerShell):**
+```powershell
+# 0. (uma vez) descobrir o ACCOUNT_ID — usado aqui e na §3
+$env:ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
+echo "Account: $env:ACCOUNT_ID"
+
+# 1. criar (ou reutilizar) um bucket para o codigo-fonte
+$env:SRC_BUCKET = "cloudtask-src-$env:ACCOUNT_ID"
+aws s3 mb "s3://$env:SRC_BUCKET" --region us-east-1
+
+# 2. zipar o repo e enviar ao S3 (Compress-Archive no lugar do zip).
+#    Remova .git/__pycache__ antes para não inflar o pacote.
+Compress-Archive -Path * -DestinationPath "$env:TEMP\source.zip" -Force
+aws s3 cp "$env:TEMP\source.zip" "s3://$env:SRC_BUCKET/source.zip"
+
+# 3. confirmar
+aws s3 ls "s3://$env:SRC_BUCKET/"
+```
 
 No projeto do CodeBuild (passo 2.4), em vez de **Source: GitHub**, escolha
 **Source: Amazon S3** e informe `s3://<SEU_SRC_BUCKET>/source.zip`. O resto
@@ -274,12 +297,8 @@ ou fonte **S3** (Academy, [§2.2-Academy](#22-academy--fonte-do-build-via-s3-sem
 O `buildspec.yml` (§2.3) faz login, build `target prod`, tag e push; o
 CodeBuild executa tudo na nuvem.
 
+**Linux/macOS (bash):**
 ```bash
-# 1. informar a URI do ECR ao projeto (env var ECR_REPO_URI da §2.4)
-#    Console -> CodeBuild -> seu projeto -> Edit -> Environment -> Env vars:
-#    ECR_REPO_URI = <acct>.dkr.ecr.us-east-1.amazonaws.com/cloudtask-api
-echo "ECR_REPO_URI = $ECR"
-
 # 2. (Academy) reempacotar o codigo e subir ao S3 antes de cada build
 zip -r /tmp/source.zip . -x '.git/*' '*/__pycache__/*' '*.pyc'
 aws s3 cp /tmp/source.zip s3://cloudtask-src-$ACCOUNT_ID/source.zip
@@ -298,6 +317,31 @@ aws codebuild batch-get-builds --ids $BUILD_ID \
 # 5. confirmar a imagem no ECR
 aws ecr list-images --repository-name cloudtask-api
 ```
+
+**Windows (PowerShell):**
+```powershell
+# 2. (Academy) reempacotar o codigo e subir ao S3 antes de cada build
+Compress-Archive -Path * -DestinationPath "$env:TEMP\source.zip" -Force
+aws s3 cp "$env:TEMP\source.zip" "s3://cloudtask-src-$env:ACCOUNT_ID/source.zip"
+
+# 3. disparar o build pela CLI (use o NOME do projeto que voce criou na 2.4)
+$env:BUILD_ID = aws codebuild start-build `
+  --project-name cloudtask-api `
+  --query 'build.id' --output text
+echo "Build: $env:BUILD_ID"
+
+# 4. acompanhar o status (repita ate SUCCEEDED; ~2-4 min)
+aws codebuild batch-get-builds --ids $env:BUILD_ID `
+  --query 'builds[0].buildStatus' --output text
+# IN_PROGRESS -> SUCCEEDED
+
+# 5. confirmar a imagem no ECR
+aws ecr list-images --repository-name cloudtask-api
+```
+
+> 💡 A env var `ECR_REPO_URI` (do passo 1) é configurada no Console do
+> CodeBuild (projeto → Edit → Environment → Env vars), não no shell:
+> `ECR_REPO_URI = <acct>.dkr.ecr.us-east-1.amazonaws.com/cloudtask-api`.
 
 > 💡 Se `start-build` falhar por permissão no Academy, dispare pelo Console
 > (CodeBuild → projeto → **Start build**). O acompanhamento por CLI (passo
@@ -475,6 +519,7 @@ curl http://$ELB_DNS:8000/health
 
 #### 7.1. Criar RDS via CLI
 
+**Linux/macOS (bash):**
 ```bash
 # Security Group permitindo 5432 só do EKS
 export VPC_ID=$(aws eks describe-cluster --name cloudtask-eks \
@@ -511,8 +556,49 @@ aws rds create-db-instance \
 aws rds wait db-instance-available --db-instance-identifier cloudtask-db
 ```
 
+**Windows (PowerShell):**
+```powershell
+# Security Group permitindo 5432 só do EKS
+$env:VPC_ID = aws eks describe-cluster --name cloudtask-eks `
+  --query "cluster.resourcesVpcConfig.vpcId" --output text
+
+aws ec2 create-security-group `
+  --group-name rds-sg `
+  --description "RDS access from EKS" `
+  --vpc-id $env:VPC_ID
+$env:RDS_SG = aws ec2 describe-security-groups `
+  --filters "Name=group-name,Values=rds-sg" `
+  --query "SecurityGroups[0].GroupId" --output text
+
+# Liberar 5432 do CIDR do EKS (ajuste conforme VPC do EKS)
+aws ec2 authorize-security-group-ingress `
+  --group-id $env:RDS_SG `
+  --protocol tcp --port 5432 `
+  --cidr 10.0.0.0/8
+
+# senha aleatória (32 chars hex, equivalente a openssl rand -hex 16)
+$PWD_RDS = -join (1..32 | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+
+# Criar instância RDS
+aws rds create-db-instance `
+  --db-instance-identifier cloudtask-db `
+  --db-instance-class db.t3.micro `
+  --engine postgres `
+  --engine-version 16.3 `
+  --master-username cloudtask `
+  --master-user-password $PWD_RDS `
+  --allocated-storage 20 `
+  --vpc-security-group-ids $env:RDS_SG `
+  --db-name cloudtask `
+  --no-publicly-accessible
+
+# aguardar (~8 min)
+aws rds wait db-instance-available --db-instance-identifier cloudtask-db
+```
+
 #### 7.2. Capturar endpoint
 
+**Linux/macOS (bash):**
 ```bash
 export RDS_HOST=$(aws rds describe-db-instances \
   --db-instance-identifier cloudtask-db \
@@ -520,12 +606,36 @@ export RDS_HOST=$(aws rds describe-db-instances \
 echo "RDS: $RDS_HOST"
 ```
 
+**Windows (PowerShell):**
+```powershell
+$env:RDS_HOST = aws rds describe-db-instances `
+  --db-instance-identifier cloudtask-db `
+  --query "DBInstances[0].Endpoint.Address" --output text
+echo "RDS: $env:RDS_HOST"
+```
+
 #### 7.3. Atualizar Secret e ConfigMap no EKS
 
+**Linux/macOS (bash):**
 ```bash
 kubectl create secret generic cloudtask-secrets \
   --namespace cloudtask \
   --from-literal=DATABASE_URL=postgresql://cloudtask:SUA_SENHA@$RDS_HOST:5432/cloudtask \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+# remover o Pod do Postgres (não precisa mais)
+kubectl delete -f infra/k8s/aws/postgres-deployment.yaml
+kubectl delete -f infra/k8s/aws/postgres-service.yaml
+
+# reiniciar a API para pegar a nova DATABASE_URL
+kubectl rollout restart deployment/api -n cloudtask
+```
+
+**Windows (PowerShell):**
+```powershell
+kubectl create secret generic cloudtask-secrets `
+  --namespace cloudtask `
+  --from-literal=DATABASE_URL=postgresql://cloudtask:SUA_SENHA@${env:RDS_HOST}:5432/cloudtask `
   --dry-run=client -o yaml | kubectl apply -f -
 
 # remover o Pod do Postgres (não precisa mais)
