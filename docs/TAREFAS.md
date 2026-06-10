@@ -298,7 +298,9 @@ Mostrar que arquivos **não devem ser armazenados dentro do container**. Apresen
   - **Modo S3:** faz `put_object` no bucket configurado.
 - [ ] Criar `app/api/routes_uploads.py` com:
   - `POST /uploads` — recebe `UploadFile`, devolve nome/URL.
-  - `GET /uploads/{filename}` — devolve o arquivo (modo local) ou pré-assinado (modo S3).
+  - `GET /uploads/{filename}` — baixa o arquivo. Param `?via=redirect|url|stream`:
+    `redirect` (default, 307 → URL pré-assinada no S3), `url` (JSON com a URL),
+    `stream` (API faz proxy dos bytes; funciona no Swagger, anti-padrão em prod).
 - [ ] Registrar o router em `app/main.py`.
 - [ ] Adicionar `local_uploads/` ao `.gitignore` (já está, confirme).
 - [ ] Criar `docs/conceitos/s3-efs-datalake.md` explicando, de forma didática:
