@@ -50,13 +50,18 @@ bucket, [`06-uploads-modo-s3.md`](06-uploads-modo-s3.md).
 
 ```bash
 # modo local (STORAGE_MODE=local)
-curl -F "file=@README.md" http://localhost:8000/uploads
-curl http://localhost:8000/uploads/README.md      # baixa de volta
-curl -i http://localhost:8000/uploads/naoexiste    # 404 esperado
+curl -F "file=@README.md" http://localhost:8000/uploads   # devolve o nome gerado
+curl http://localhost:8000/uploads/<nome-gerado>          # baixa de volta
+curl -i http://localhost:8000/uploads/naoexiste           # 404 esperado
 ```
+
+O `GET /uploads/{nome}` aceita `?via=redirect|url|stream` (3 estratégias de
+download na nuvem — proxy vs URL pré-assinada). Detalhe e trade-off em
+[`06-uploads-modo-s3.md`](06-uploads-modo-s3.md) §6.
 
 ✅ **Checkpoint A1:** upload grava em `local_uploads/` (modo local) **ou** gera
 URL pré-assinada do S3 (modo s3). A mesma API serve os dois — só muda o `.env`.
+O download tem 3 modos via `?via=` (default `redirect`).
 
 ---
 
