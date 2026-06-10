@@ -162,6 +162,7 @@ kubectl get pods -n cloudtask -w
 
 **O que testar (mesmos testes do Kind, agora num DNS público):**
 
+**Linux/macOS (bash):**
 ```bash
 LB=$(kubectl get svc cloudtask-api-lb -n cloudtask \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
@@ -169,6 +170,17 @@ curl http://$LB/health
 curl -X POST http://$LB/tasks -H "Content-Type: application/json" \
   -d '{"title":"Tarefa no EKS"}'
 curl http://$LB/tasks
+echo "Swagger: http://$LB/docs"
+```
+
+**Windows (PowerShell):** (`curl` no Windows é `curl.exe`)
+```powershell
+$LB = kubectl get svc cloudtask-api-lb -n cloudtask `
+  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+curl.exe http://$LB/health
+curl.exe -X POST http://$LB/tasks -H "Content-Type: application/json" `
+  -d '{\"title\":\"Tarefa no EKS\"}'
+curl.exe http://$LB/tasks
 echo "Swagger: http://$LB/docs"
 ```
 

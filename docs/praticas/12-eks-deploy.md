@@ -67,15 +67,31 @@ image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/cloudtask-api:latest
 
 ## 3. Criar o Secret real (a partir do template)
 
+**Linux/macOS (bash)** — ou rode no devcontainer, que já tem `openssl`/`base64`:
 ```bash
 cp infra/k8s/aws/secret.example.yaml infra/k8s/aws/secret.yaml
 
-# gerar valores base64 (no devcontainer):
+# gerar valores base64:
 echo -n 'cloudtask' | base64
 openssl rand -hex 16 | tr -d '\n' | base64    # POSTGRES_PASSWORD
 openssl rand -hex 32 | tr -d '\n' | base64    # SECRET_KEY
 # DATABASE_URL:
 echo -n "postgresql://cloudtask:SUA_SENHA@postgres:5432/cloudtask" | base64
+```
+
+**Windows (PowerShell):**
+```powershell
+Copy-Item infra/k8s/aws/secret.example.yaml infra/k8s/aws/secret.yaml
+
+# helper: string -> base64
+function To-B64($s) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($s)) }
+
+To-B64 'cloudtask'                                                   # usuário
+$pgPass = -join (1..16 | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+To-B64 $pgPass                                                        # POSTGRES_PASSWORD
+$secretKey = -join (1..32 | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+To-B64 $secretKey                                                     # SECRET_KEY
+To-B64 "postgresql://cloudtask:SUA_SENHA@postgres:5432/cloudtask"     # DATABASE_URL
 ```
 
 Cole nos campos `data:` de `secret.yaml` e **descomente** a linha `- secret.yaml`
@@ -118,6 +134,7 @@ kubectl get svc -n cloudtask
 > O `EXTERNAL-IP` leva **1–3 min** para sair de `<pending>` (a AWS está
 > provisionando o ELB). Aguarde.
 
+**Linux/macOS (bash):**
 ```bash
 LB=$(kubectl get svc cloudtask-api-lb -n cloudtask -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
@@ -131,6 +148,24 @@ curl http://$LB/health/ready
 curl -X POST http://$LB/tasks -H "Content-Type: application/json" \
   -d '{"title":"Tarefa no EKS","priority":"high"}'
 curl http://$LB/tasks
+
+echo "Swagger: http://$LB/docs"
+```
+
+**Windows (PowerShell):** (`curl` no Windows é `curl.exe`)
+```powershell
+$LB = kubectl get svc cloudtask-api-lb -n cloudtask -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+
+curl.exe http://$LB/health
+# {"status":"ok"}
+
+curl.exe http://$LB/health/ready
+# {"status":"ok","database":"ok"}
+
+# CRUD na nuvem
+curl.exe -X POST http://$LB/tasks -H "Content-Type: application/json" `
+  -d '{\"title\":\"Tarefa no EKS\",\"priority\":\"high\"}'
+curl.exe http://$LB/tasks
 
 echo "Swagger: http://$LB/docs"
 ```

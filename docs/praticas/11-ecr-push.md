@@ -69,12 +69,21 @@ TAG="$(git rev-parse --short HEAD)" ./scripts/build-and-push-ecr.sh
 > Se der `Permission denied` ao rodar o script:
 > `chmod +x scripts/build-and-push-ecr.sh` e tente de novo.
 
+> 🪟 **Windows (PowerShell):** o script é **bash** e não roda direto no
+> PowerShell. Duas opções:
+> 1. Rode dentro do **devcontainer** (já tem bash) ou no **Git Bash/WSL**:
+>    ```bash
+>    REGION=us-east-1 TAG=latest ./scripts/build-and-push-ecr.sh
+>    ```
+> 2. Ou use os comandos **manuais em PowerShell** do [§3](#3-caminho-manual-entender-cada-comando) abaixo (fazem o mesmo, passo a passo).
+
 Pule para o **passo 4 (conferir)** se usou o script.
 
 ---
 
 ## 3. Caminho manual (entender cada comando)
 
+**Linux/macOS (bash):**
 ```bash
 # variáveis
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
@@ -98,6 +107,33 @@ docker tag cloudtask-api:prod $REGISTRY/$REPO:latest
 
 # 3.5 push
 docker push $REGISTRY/$REPO:latest
+```
+
+**Windows (PowerShell):**
+```powershell
+# variáveis
+$ACCOUNT  = aws sts get-caller-identity --query Account --output text
+$REGION   = "us-east-1"
+$REPO     = "cloudtask-api"
+$REGISTRY = "$ACCOUNT.dkr.ecr.$REGION.amazonaws.com"
+
+# 3.1 criar o repositório (uma vez). No PowerShell não há "|| true";
+#     se já existir, o erro é inofensivo — apenas siga.
+aws ecr create-repository --repository-name $REPO --region $REGION `
+  --image-scanning-configuration scanOnPush=true
+
+# 3.2 login do Docker no ECR (token dura ~12h)
+aws ecr get-login-password --region $REGION `
+  | docker login --username AWS --password-stdin $REGISTRY
+
+# 3.3 build da imagem PROD (estágio enxuto do Dockerfile multi-stage)
+docker build --target prod -t cloudtask-api:prod .
+
+# 3.4 tag apontando para o ECR
+docker tag cloudtask-api:prod "$REGISTRY/$REPO:latest"
+
+# 3.5 push
+docker push "$REGISTRY/$REPO:latest"
 ```
 
 > **Por que `--target prod`?** A imagem que vai para a nuvem é a enxuta, sem
