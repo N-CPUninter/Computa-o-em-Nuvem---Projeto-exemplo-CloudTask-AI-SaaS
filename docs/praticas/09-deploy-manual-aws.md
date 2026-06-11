@@ -105,13 +105,39 @@ didático para **ver o pipeline acontecer dentro da AWS**.
 
 ### Passos
 
-#### 2.1. Criar token GitHub (PAT)
+#### 2.1. Criar `buildspec.yml` na raiz do repo
+
+```yaml
+# buildspec.yml — usado pelo CodeBuild
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo "Login no ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
+      - IMAGE_TAG=v$(date +%Y%m%d-%H%M%S)
+  build:
+    commands:
+      - echo "Build da imagem (target prod)..."
+      - docker build --target prod -t cloudtask-api:$IMAGE_TAG .
+      - docker tag cloudtask-api:$IMAGE_TAG $ECR_REPO_URI:$IMAGE_TAG
+      - docker tag cloudtask-api:$IMAGE_TAG $ECR_REPO_URI:latest
+  post_build:
+    commands:
+      - echo "Push para ECR..."
+      - docker push $ECR_REPO_URI:$IMAGE_TAG
+      - docker push $ECR_REPO_URI:latest
+```
+
+Commitar e empurrar.
+
+#### 2.2. Criar token GitHub (PAT apenas conta AWS PRÓPRIA)
 
 1. GitHub → Settings → Developer Settings → Personal Access Tokens → Tokens (classic).
 2. Permissões mínimas: `repo` (público) ou `repo` + `read:org` (privado).
 3. Copie o token (`ghp_...`).
 
-#### 2.2. Conectar o GitHub no CodeBuild via CLI (conta AWS PRÓPRIA)
+#### 2.3. Conectar o GitHub no CodeBuild via CLI (conta AWS PRÓPRIA)
 
 > ⚠️ **Este comando só funciona em conta AWS própria/privada** (com IAM
 > amplo). **No AWS Academy / Learner Lab ele FALHA** — a role `voclabs` não
@@ -136,7 +162,7 @@ aws codebuild import-source-credentials \
   --token "ghp_SEU_TOKEN_AQUI"
 ```
 
-#### 2.2-Academy — Fonte do build via S3 (sem GitHub)
+#### 2.3-Academy — Fonte do build via S3 (sem GitHub)
 
 No Learner Lab o CodeBuild não consegue clonar o GitHub (sem
 `ImportSourceCredentials`). Solução permitida pela role `voclabs`:
@@ -186,32 +212,6 @@ No projeto do CodeBuild (passo 2.4), em vez de **Source: GitHub**, escolha
 
 > 💡 A cada mudança no código, refaça o `zip` + `aws s3 cp` e dispare o
 > build de novo. É o "git push" manual do Academy.
-
-#### 2.3. Criar `buildspec.yml` na raiz do repo
-
-```yaml
-# buildspec.yml — usado pelo CodeBuild
-version: 0.2
-phases:
-  pre_build:
-    commands:
-      - echo "Login no ECR..."
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
-      - IMAGE_TAG=v$(date +%Y%m%d-%H%M%S)
-  build:
-    commands:
-      - echo "Build da imagem (target prod)..."
-      - docker build --target prod -t cloudtask-api:$IMAGE_TAG .
-      - docker tag cloudtask-api:$IMAGE_TAG $ECR_REPO_URI:$IMAGE_TAG
-      - docker tag cloudtask-api:$IMAGE_TAG $ECR_REPO_URI:latest
-  post_build:
-    commands:
-      - echo "Push para ECR..."
-      - docker push $ECR_REPO_URI:$IMAGE_TAG
-      - docker push $ECR_REPO_URI:latest
-```
-
-Commitar e empurrar.
 
 #### 2.4. Criar o projeto CodeBuild
 
