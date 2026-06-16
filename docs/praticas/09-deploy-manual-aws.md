@@ -343,6 +343,13 @@ Crie `infra/aws/task-def-semana02.json`:
       "image": "postgres:16-alpine",
       "essential": true,
       "portMappings": [{ "containerPort": 5432, "protocol": "tcp" }],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "pg_isready -U cloudtask -d cloudtask"],
+        "interval": 10,
+        "timeout": 5,
+        "retries": 5,
+        "startPeriod": 30
+      },
       "secrets": [
         { "name": "POSTGRES_USER",     "valueFrom": "SECRET_ARN:POSTGRES_USER::" },
         { "name": "POSTGRES_PASSWORD", "valueFrom": "SECRET_ARN:POSTGRES_PASSWORD::" },
@@ -362,7 +369,7 @@ Crie `infra/aws/task-def-semana02.json`:
       "name": "api",
       "image": "ECR_REPO_URI:latest",
       "essential": true,
-      "dependsOn": [{ "containerName": "db", "condition": "START" }],
+      "dependsOn": [{ "containerName": "db", "condition": "HEALTHY" }],
       "portMappings": [{ "containerPort": 8000, "protocol": "tcp" }],
       "secrets": [
         { "name": "DATABASE_URL", "valueFrom": "SECRET_ARN:DATABASE_URL::" },
@@ -407,22 +414,37 @@ aws ecs register-task-definition \
 aws ecs create-cluster --cluster-name cloudtask-fargate 2>/dev/null || true
 
 # VPC default + subnets públicas
-export VPC_ID=$(aws ec2 describe-vpcs --filters Name=is-default,Values=true \
+export VPC_ID=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
   --query "Vpcs[0].VpcId" --output text)
 export SUBNETS=$(aws ec2 describe-subnets \
   --filters "Name=vpc-id,Values=$VPC_ID" \
             "Name=map-public-ip-on-launch,Values=true" \
   --query "Subnets[].SubnetId" --output text | tr '\t' ',')
+# VPC default sem subnets ("conta limpa")? recria uma subnet default.
+# Sem isso, create-service falha com "Subnet ID must match subnet-...".
+if [ -z "$SUBNETS" ]; then
+  aws ec2 create-default-subnet --availability-zone us-east-1a >/dev/null
+  export SUBNETS=$(aws ec2 describe-subnets \
+    --filters "Name=vpc-id,Values=$VPC_ID" \
+              "Name=map-public-ip-on-launch,Values=true" \
+    --query "Subnets[].SubnetId" --output text | tr '\t' ',')
+fi
 
-# Security Group permitindo 8000
-aws ec2 create-security-group \
+# Security Group permitindo 8000 (cria-ou-reusa em re-run).
+# Atribui SEM export (export sempre retorna 0 e mascararia a falha do $(...)).
+SG_ID=$(aws ec2 create-security-group \
   --group-name cloudtask-semana02-sg \
-  --description "Allow 8000 (didactic)" --vpc-id $VPC_ID
-export SG_ID=$(aws ec2 describe-security-groups \
-  --filters Name=group-name,Values=cloudtask-semana02-sg \
-  --query "SecurityGroups[0].GroupId" --output text)
+  --description "Allow 8000 (didactic)" --vpc-id $VPC_ID \
+  --query "GroupId" --output text 2>/dev/null)
+if [ -z "$SG_ID" ]; then
+  SG_ID=$(aws ec2 describe-security-groups \
+    --filters Name=group-name,Values=cloudtask-semana02-sg Name=vpc-id,Values=$VPC_ID \
+    --query "SecurityGroups[0].GroupId" --output text)
+fi
+export SG_ID
+# regra 8000 (|| true: ignora se a regra já existir)
 aws ec2 authorize-security-group-ingress \
-  --group-id $SG_ID --protocol tcp --port 8000 --cidr 0.0.0.0/0
+  --group-id $SG_ID --protocol tcp --port 8000 --cidr 0.0.0.0/0 2>/dev/null || true
 
 # Service Fargate
 aws ecs create-service \
