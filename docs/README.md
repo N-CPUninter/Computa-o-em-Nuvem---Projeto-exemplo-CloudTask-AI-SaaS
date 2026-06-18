@@ -54,6 +54,8 @@ Tutoriais com comandos. Cada arquivo é um exercício prático que você pode (e
 | [`praticas/13-roteiro-aula-3-e-4.md`](praticas/13-roteiro-aula-3-e-4.md) | 🧭 **Roteiro da aula combinada Semanas 3+4** (Kind local → ECR → EKS), com os testes de cada etapa |
 | [`praticas/14-hpa-carga-custos.md`](praticas/14-hpa-carga-custos.md) | Aula 9: metrics-server + HPA, teste de carga (`scripts/load-test-simple.py`), observar escala e custos |
 | [`praticas/15-eventos-dynamodb.md`](praticas/15-eventos-dynamodb.md) | Aula 10: eventos/logs em DynamoDB (fallback JSON local), emissão automática no CRUD |
+| [`praticas/16-console-vs-script.md`](praticas/16-console-vs-script.md) | 🐢 Console vs Script: criar DynamoDB/EKS/Budget **na mão** pelo console (cliques + tempo) vs 1 comando — sentir por que automatizar |
+| [`praticas/17-site-estatico-s3-vs-ec2.md`](praticas/17-site-estatico-s3-vs-ec2.md) | 🌐 **Demo rápida no AWS CloudShell**: mesma página na internet por **S3 Static Website** (sem servidor, centavos) vs **EC2 + Apache** (servidor real, cobra por hora) |
 | [`praticas/99-troubleshooting.md`](praticas/99-troubleshooting.md) | Erros comuns + como resolver |
 
 > 💡 **Os práticos não dependem todos uns dos outros.** Mas se está perdido,
@@ -103,6 +105,10 @@ docs/
     ├── 11-ecr-push.md                  ← Semana 4 (ECR)
     ├── 12-eks-deploy.md                ← Semana 4 (EKS)
     ├── 13-roteiro-aula-3-e-4.md        ← roteiro combinado 3+4
+    ├── 14-hpa-carga-custos.md          ← Semana 5 (Aula 9: HPA + custos)
+    ├── 15-eventos-dynamodb.md          ← Semana 5 (Aula 10: DynamoDB/eventos)
+    ├── 16-console-vs-script.md         ← Semana 5 (console na mão vs script)
+    ├── 17-site-estatico-s3-vs-ec2.md   ← site estático: S3 vs EC2
     └── 99-troubleshooting.md
 ```
 
