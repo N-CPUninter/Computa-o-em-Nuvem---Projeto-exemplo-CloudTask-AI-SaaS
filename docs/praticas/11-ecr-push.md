@@ -175,5 +175,5 @@ Anote a URI da imagem — você vai colá-la no Deployment do EKS:
 | Quero... | Vá em |
 | --- | --- |
 | Rodar essa imagem no EKS | [`12-eks-deploy.md`](12-eks-deploy.md) |
-| Ver a aula 3+4 do começo ao fim | [`13-roteiro-aula-3-e-4.md`](13-roteiro-aula-3-e-4.md) |
+| Ver a aula 3+4 do começo ao fim | [`13-roteiro-aula-semanas-3-e-4.md`](13-roteiro-aula-semanas-3-e-4.md) |
 | Comparar ECR x Docker Hub, ECS x EKS | [`../conceitos/infra-aws-minima-por-semana.md`](../conceitos/infra-aws-minima-por-semana.md) |
