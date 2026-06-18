@@ -10,7 +10,7 @@
 >   volume persistente).
 >
 > **Quando:** Semana 3 / Aula 6 (na turma atual, dada junto com a Semana 4 —
-> ver [`13-roteiro-aula-3-e-4.md`](13-roteiro-aula-3-e-4.md)).
+> ver [`13-roteiro-aula-semanas-3-e-4.md`](13-roteiro-aula-semanas-3-e-4.md)).
 > **Tempo:** 30–45 min (primeira vez).
 > **Custo:** $0 (tudo local).
 >
@@ -519,6 +519,6 @@ kind delete cluster --name cloudtask
 | --- | --- |
 | Levar a imagem para a nuvem (ECR) | [`11-ecr-push.md`](11-ecr-push.md) |
 | Deployar na nuvem (EKS) | [`12-eks-deploy.md`](12-eks-deploy.md) |
-| Ver a aula combinada 3+4 do início ao fim | [`13-roteiro-aula-3-e-4.md`](13-roteiro-aula-3-e-4.md) |
+| Ver a aula combinada 3+4 do início ao fim | [`13-roteiro-aula-semanas-3-e-4.md`](13-roteiro-aula-semanas-3-e-4.md) |
 | Comparar Kind × EKS × Fargate | [`../conceitos/infra-aws-minima-por-semana.md`](../conceitos/infra-aws-minima-por-semana.md) |
 | Resolver problemas mais gerais | [`99-troubleshooting.md`](99-troubleshooting.md) |

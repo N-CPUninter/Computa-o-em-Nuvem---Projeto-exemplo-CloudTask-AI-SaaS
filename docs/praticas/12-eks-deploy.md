@@ -248,5 +248,5 @@ mostra como seria — **não aplique no lab**. Conceito: [`../conceitos/https-tl
 | Quero... | Vá em |
 | --- | --- |
 | Escalar com HPA + ver custos | Semana 5 — [`../ROADMAP.md`](../ROADMAP.md) (Aula 9) |
-| Revisar a aula combinada 3+4 | [`13-roteiro-aula-3-e-4.md`](13-roteiro-aula-3-e-4.md) |
+| Revisar a aula combinada 3+4 | [`13-roteiro-aula-semanas-3-e-4.md`](13-roteiro-aula-semanas-3-e-4.md) |
 | Trocar Postgres-Pod por RDS | [`09-deploy-manual-aws.md`](09-deploy-manual-aws.md) §7 |

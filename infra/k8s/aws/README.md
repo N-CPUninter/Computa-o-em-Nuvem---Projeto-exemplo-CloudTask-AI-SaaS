@@ -6,7 +6,7 @@ com a imagem vinda do **Amazon ECR** e exposição via **Service LoadBalancer**.
 > **Roteiros passo a passo:**
 > - ECR (Aula 7): [`docs/praticas/11-ecr-push.md`](../../../docs/praticas/11-ecr-push.md)
 > - EKS (Aula 8): [`docs/praticas/12-eks-deploy.md`](../../../docs/praticas/12-eks-deploy.md)
-> - Aula combinada Semanas 3+4: [`docs/praticas/13-roteiro-aula-3-e-4.md`](../../../docs/praticas/13-roteiro-aula-3-e-4.md)
+> - Aula combinada Semanas 3+4: [`docs/praticas/13-roteiro-aula-semanas-3-e-4.md`](../../../docs/praticas/13-roteiro-aula-semanas-3-e-4.md)
 >
 > Este README é só o índice + ordem de aplicação.
 

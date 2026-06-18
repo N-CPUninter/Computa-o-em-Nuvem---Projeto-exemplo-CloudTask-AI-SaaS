@@ -205,7 +205,7 @@ Roteiros mastigados: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.
 - **EKS**: [`docs/praticas/12-eks-deploy.md`](docs/praticas/12-eks-deploy.md) + manifests em `infra/k8s/aws/`
 - **Kubernetes Kind (Aula 6)**: [`docs/praticas/10-kubernetes-kind-local.md`](docs/praticas/10-kubernetes-kind-local.md) + manifests em `infra/k8s/`
 - **S3 (Aula 5)**: [`docs/conceitos/s3-efs-datalake.md`](docs/conceitos/s3-efs-datalake.md)
-- **Roteiro Aula 3+4 (semanas combinadas)**: [`docs/praticas/13-roteiro-aula-3-e-4.md`](docs/praticas/13-roteiro-aula-3-e-4.md)
+- **Roteiro Aula 3+4 (semanas combinadas)**: [`docs/praticas/13-roteiro-aula-semanas-3-e-4.md`](docs/praticas/13-roteiro-aula-semanas-3-e-4.md)
 - **Stack AWS por semana** (custos, Postgres container × RDS, ECS × EKS): [`docs/conceitos/infra-aws-minima-por-semana.md`](docs/conceitos/infra-aws-minima-por-semana.md)
 - **Deploy manual AWS** (ECR, Fargate, EKS, RDS, Secrets Manager, CodeBuild): [`docs/praticas/09-deploy-manual-aws.md`](docs/praticas/09-deploy-manual-aws.md)
 - Segurança: [`docs/conceitos/security-model.md`](docs/conceitos/security-model.md) · [`docs/conceitos/aws-networking.md`](docs/conceitos/aws-networking.md) · [`docs/conceitos/https-tls.md`](docs/conceitos/https-tls.md)
