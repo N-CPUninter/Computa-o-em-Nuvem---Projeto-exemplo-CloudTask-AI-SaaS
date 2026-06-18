@@ -9,12 +9,13 @@
 > - a mesma lição da Semana 2 sobre **perda de dados** (Postgres como Pod sem
 >   volume persistente).
 >
-> **Quando:** Semana 3 / Aula 6.
+> **Quando:** Semana 3 / Aula 6 (na turma atual, dada junto com a Semana 4 —
+> ver [`13-roteiro-aula-semanas-3-e-4.md`](13-roteiro-aula-semanas-3-e-4.md)).
 > **Tempo:** 30–45 min (primeira vez).
 > **Custo:** $0 (tudo local).
 >
 > **Pré-req:**
-> - Devcontainer da semana-03 rodando.
+> - Devcontainer da semana-03 (ou semana-04) rodando.
 > - **Docker Desktop** ligado no HOST.
 > - **Kind** instalado **no HOST** (Windows/macOS/Linux).
 > - **`kubectl`** disponível (já vem no devcontainer; instale no host também
@@ -516,6 +517,8 @@ kind delete cluster --name cloudtask
 
 | Quero... | Vá em |
 | --- | --- |
-| Deployar na nuvem (EKS) | [`09-deploy-manual-aws.md`](09-deploy-manual-aws.md) §5 |
+| Levar a imagem para a nuvem (ECR) | [`11-ecr-push.md`](11-ecr-push.md) |
+| Deployar na nuvem (EKS) | [`12-eks-deploy.md`](12-eks-deploy.md) |
+| Ver a aula combinada 3+4 do início ao fim | [`13-roteiro-aula-semanas-3-e-4.md`](13-roteiro-aula-semanas-3-e-4.md) |
 | Comparar Kind × EKS × Fargate | [`../conceitos/infra-aws-minima-por-semana.md`](../conceitos/infra-aws-minima-por-semana.md) |
 | Resolver problemas mais gerais | [`99-troubleshooting.md`](99-troubleshooting.md) |
