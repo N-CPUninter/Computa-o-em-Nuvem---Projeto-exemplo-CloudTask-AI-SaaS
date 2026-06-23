@@ -1382,7 +1382,7 @@ kubectl apply -f infra/k8s/hpa.yaml
 kubectl get hpa -n cloudtask
 
 # 4. teste de carga simples
-python scripts/load-test-simple.py http://$ELB_DNS:8000
+python scripts/semana-05-hpa/teste-carga.py http://$ELB_DNS:8000
 
 # 5. ver pods escalando
 kubectl get pods -n cloudtask -w

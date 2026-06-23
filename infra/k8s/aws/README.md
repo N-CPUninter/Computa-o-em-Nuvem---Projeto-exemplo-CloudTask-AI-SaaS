@@ -42,7 +42,7 @@ com a imagem vinda do **Amazon ECR** e exposição via **Service LoadBalancer**.
 aws sts get-caller-identity        # confirma a conta
 
 # 1. Build + push da imagem PROD para o ECR (Aula 7)
-./scripts/build-and-push-ecr.sh
+./scripts/semana-04-ecr/build-push-ecr.sh
 # anote a linha "image: <ACCOUNT>.dkr.ecr....amazonaws.com/cloudtask-api:latest"
 
 # 2. Editar deployment-eks.yaml: troque <ACCOUNT> pelo ID da sua conta
