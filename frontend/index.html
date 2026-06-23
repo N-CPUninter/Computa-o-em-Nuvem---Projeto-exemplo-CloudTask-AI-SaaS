@@ -194,13 +194,18 @@ function openCfg(){$("#cfg-url").value=API;dlgCfg.showModal();}
 function saveCfg(){API=$("#cfg-url").value.trim().replace(/\/$/,"");localStorage.setItem("cloudtask_api",API);dlgCfg.close();setApiLabel();if(TOKEN)loadAll();}
 
 // ---- fetch com TIMEOUT (AbortController): nenhuma chamada trava a tela ----
+// Rastreia as requisições em voo para poder CANCELAR todas no logout (senão uma
+// chamada pendente deixa as travas presas e o board não carrega no relogin).
+const _ctrls=new Set();
+function abortAll(){for(const c of _ctrls){try{c.abort();}catch{}}_ctrls.clear();}
 async function tfetch(url,opts={},timeoutMs=15000){
-  const ctrl=new AbortController();
+  const ctrl=new AbortController();_ctrls.add(ctrl);
   const id=setTimeout(()=>ctrl.abort(),timeoutMs);
   try{return await fetch(url,Object.assign({},opts,{signal:ctrl.signal}));}
   catch(e){throw new Error(e.name==="AbortError"?"tempo de resposta esgotado":"falha de rede");}
-  finally{clearTimeout(id);}
+  finally{clearTimeout(id);_ctrls.delete(ctrl);}
 }
+function closeDialogs(){[dlgTask,dlgAtt,dlgCfg].forEach(d=>{try{if(d.open)d.close();}catch{}});}
 
 // ---- helper da API (injeta Bearer; 401 -> login). opts.timeout opcional ----
 async function api(path,opts={}){
@@ -225,10 +230,17 @@ async function doLogin(btn){
   }catch(e){$("#lg-err").textContent="Não foi possível conectar à API ("+e.message+"). Confira a URL em ⚙.";}
   finally{if(btn)btn.disabled=false;}
 }
-function logout(){TOKEN="";localStorage.removeItem("cloudtask_token");$("#app").style.display="none";$("#login").style.display="grid";}
+function logout(){
+  abortAll();                                  // cancela requisições em voo
+  _loading=_again=_saving=_uploading=false;     // zera as travas (evita board preso no relogin)
+  closeDialogs();                              // não deixa modal aberto bloqueando cliques
+  TOKEN="";localStorage.removeItem("cloudtask_token");
+  $("#app").style.display="none";$("#login").style.display="grid";
+}
 // NÃO bloqueia a UI: mostra o app já e carrega em segundo plano (clicar funciona
 // na hora, mesmo se a API estiver lenta).
 function showApp(){
+  closeDialogs();_loading=_again=_saving=_uploading=false;  // estado limpo a cada entrada
   $("#login").style.display="none";$("#app").style.display="flex";setApiLabel();
   api("/auth/me").then(me=>{$("#whoami").textContent=me.username;}).catch(()=>{$("#whoami").textContent="admin";});
   loadAll();

@@ -61,6 +61,11 @@ class Settings(BaseSettings):
     # Validade do token em minutos.
     jwt_expire_minutes: int = Field(default=480)
 
+    # Prefixo público quando a API roda ATRÁS de um proxy que adiciona um
+    # caminho (ex.: o Edge/Caddy serve a API em `/api`). O FastAPI usa isto para
+    # gerar URLs corretas (Swagger -> `/api/openapi.json`). Vazio = sem prefixo.
+    root_path: str = Field(default="")
+
     # --- Banco de dados ----------------------------------------------------
     # Mesmo formato local e no Amazon RDS — só muda o host/usuário/senha.
     database_url: str = Field(

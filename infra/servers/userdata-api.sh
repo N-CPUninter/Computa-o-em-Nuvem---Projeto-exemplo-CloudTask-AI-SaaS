@@ -27,6 +27,7 @@ set -xe
 : "${REPO_URL:=https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS.git}"
 : "${BRANCH:=semana-06-cdk-final}"
 : "${DATABASE_URL:=}"
+: "${ROOT_PATH:=}"   # atrás do proxy: "/api" (Swagger gera URLs com o prefixo)
 
 dnf update -y
 dnf install -y docker git
@@ -64,6 +65,7 @@ docker run -d --name api --network cloudtask --restart unless-stopped \
   -e ADMIN_PASSWORD="$ADMIN_PASSWORD" \
   -e STORAGE_MODE=local \
   -e CORS_ORIGINS='*' \
+  -e ROOT_PATH="$ROOT_PATH" \
   cloudtask-api:prod
 
 echo "API up on :8000"

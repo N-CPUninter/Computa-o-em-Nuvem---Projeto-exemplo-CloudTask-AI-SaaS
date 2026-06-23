@@ -92,7 +92,7 @@ echo "==> Elastic IP: $EIP   Host HTTPS: $HOST"
 
 # --- API ---------------------------------------------------------------------
 UD_API="$(mktemp)"
-{ echo '#!/bin/bash'; echo "export ADMIN_PASSWORD='$ADMIN_PASSWORD'"; echo "export SECRET_KEY='$SECRET_KEY'"; tail -n +2 "$HERE/userdata-api.sh"; } > "$UD_API"
+{ echo '#!/bin/bash'; echo "export ADMIN_PASSWORD='$ADMIN_PASSWORD'"; echo "export SECRET_KEY='$SECRET_KEY'"; echo "export ROOT_PATH='/api'"; tail -n +2 "$HERE/userdata-api.sh"; } > "$UD_API"
 API_ID=$(run_instance cloudtask-api t3.small "$UD_API")
 echo "==> API: $API_ID"
 

@@ -179,6 +179,9 @@ app = FastAPI(
     description=APP_DESCRIPTION,
     version=__version__,
     lifespan=lifespan,
+    # Atrás do Edge/Caddy a API fica em `/api` (o proxy remove o prefixo). O
+    # root_path faz o FastAPI gerar as URLs do Swagger/OpenAPI já com `/api`.
+    root_path=settings.root_path,
     contact={
         "name": "Prof. Guilherme Patriota",
         "url": "https://github.com/guipatriota",
