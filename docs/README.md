@@ -49,7 +49,7 @@ Tutoriais com comandos. Cada arquivo é um exercício prático que você pode (e
 | [`praticas/08-debug-vscode.md`](praticas/08-debug-vscode.md) | Depurar com breakpoints no VS Code (debugpy attach) |
 | [`praticas/09-deploy-manual-aws.md`](praticas/09-deploy-manual-aws.md) | Deploy manual AWS: ECR, ECS Fargate, EKS, RDS, Secrets Manager, DynamoDB (por semana) |
 | [`praticas/10-kubernetes-kind-local.md`](praticas/10-kubernetes-kind-local.md) | Aula 6: cluster Kind local + manifests `infra/k8s/` (Postgres pod + API 2 réplicas + NodePort + demo perda de dados) |
-| [`praticas/11-ecr-push.md`](praticas/11-ecr-push.md) | Aula 7: build `--target prod` + push da imagem para o Amazon ECR (com `scripts/build-and-push-ecr.sh`) |
+| [`praticas/11-ecr-push.md`](praticas/11-ecr-push.md) | Aula 7: build `--target prod` + push da imagem para o Amazon ECR (com `scripts/semana-04-ecr/build-push-ecr.sh`) |
 | [`praticas/12-eks-deploy.md`](praticas/12-eks-deploy.md) | Aula 8: deploy no Amazon EKS (imagem do ECR + Service LoadBalancer) e **destruir** para não queimar crédito |
 | [`praticas/13-roteiro-aula-semanas-3-e-4.md`](praticas/13-roteiro-aula-semanas-3-e-4.md) | 🧭 **Roteiro da aula combinada Semanas 3+4** (Kind local → ECR → EKS), com os testes de cada etapa |
 | [`praticas/14-hpa-carga-custos.md`](praticas/14-hpa-carga-custos.md) | Aula 9: metrics-server + HPA, teste de carga (`scripts/load-test-simple.py`), observar escala e custos |

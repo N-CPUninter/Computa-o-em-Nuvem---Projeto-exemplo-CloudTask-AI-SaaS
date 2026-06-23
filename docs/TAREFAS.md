@@ -405,13 +405,13 @@ Mostrar como a imagem Docker construída localmente é enviada para um **registr
   ```bash
   aws ecr create-repository --repository-name cloudtask-api --region us-east-1
   ```
-- [ ] Criar `scripts/build-and-push-ecr.sh` automatizando:
+- [ ] Criar `scripts/semana-04-ecr/build-push-ecr.sh` automatizando:
   1. `aws ecr get-login-password ... | docker login ...`
   2. `docker build -t cloudtask-api .`
   3. `docker tag cloudtask-api:latest <account>.dkr.ecr.<region>.amazonaws.com/cloudtask-api:latest`
   4. `docker push <account>.dkr.ecr.<region>.amazonaws.com/cloudtask-api:latest`
   - Variáveis `AWS_REGION` e `AWS_ACCOUNT_ID` devem vir do ambiente ou de argumentos.
-- [ ] Tornar o script executável (`chmod +x scripts/build-and-push-ecr.sh`).
+- [ ] Tornar o script executável (`chmod +x scripts/semana-04-ecr/build-push-ecr.sh`).
 - [ ] Criar `docs/ecr-guide.md` explicando:
   - O que é um container registry.
   - Diferenças entre Docker Hub e ECR.

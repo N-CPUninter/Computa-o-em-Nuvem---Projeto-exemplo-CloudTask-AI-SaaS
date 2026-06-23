@@ -36,7 +36,7 @@
 
 ### Aula 7 — Publicar imagem no Amazon ECR
 
-- `scripts/build-and-push-ecr.sh` — script idempotente que cria o repo, faz login,
+- `scripts/semana-04-ecr/build-push-ecr.sh` — script idempotente que cria o repo, faz login,
   builda a imagem `--target prod`, taggea e dá `push` no ECR.
 - `buildspec.yml` — equivalente para o AWS CodeBuild (alternativa ao build local).
 - Doc completo: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md)
@@ -175,7 +175,7 @@ credenciais reais ou LocalStack); validar manualmente.
 aws sts get-caller-identity
 
 # 2. Aula 7 — publicar imagem no ECR
-./scripts/build-and-push-ecr.sh
+./scripts/semana-04-ecr/build-push-ecr.sh
 
 # 3. Aula 8 — cluster EKS (~15 min) + deploy
 eksctl create cluster --name cloudtask-eks --region us-east-1 \
@@ -201,7 +201,7 @@ Roteiros mastigados: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.
 - Issues da semana: [#7 — Aula 7](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/7) · [#8 — Aula 8](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/8) · [#5 — Aula 5](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/5) · [#6 — Aula 6](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/6)
 - Lista de tarefas: [`docs/TAREFAS.md`](docs/TAREFAS.md)
 - Setup do zero: [`docs/praticas/00-setup-inicial-e-aws-academy.md`](docs/praticas/00-setup-inicial-e-aws-academy.md)
-- **ECR**: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md) + `scripts/build-and-push-ecr.sh` + `buildspec.yml`
+- **ECR**: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md) + `scripts/semana-04-ecr/build-push-ecr.sh` + `buildspec.yml`
 - **EKS**: [`docs/praticas/12-eks-deploy.md`](docs/praticas/12-eks-deploy.md) + manifests em `infra/k8s/aws/`
 - **Kubernetes Kind (Aula 6)**: [`docs/praticas/10-kubernetes-kind-local.md`](docs/praticas/10-kubernetes-kind-local.md) + manifests em `infra/k8s/`
 - **S3 (Aula 5)**: [`docs/conceitos/s3-efs-datalake.md`](docs/conceitos/s3-efs-datalake.md)
