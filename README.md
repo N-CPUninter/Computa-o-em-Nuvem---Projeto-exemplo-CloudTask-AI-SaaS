@@ -5,9 +5,9 @@
 
 <!-- Título e breve descrição do repositório -->
 <div align="center">
-  <h1>CloudTask AI SaaS — Semana 4 (Aulas 7 e 8) — combinada com a Semana 3</h1>
-  <p><b>Branch <code>semana-04-eks-aws</code> — cobre as Aulas 7 e 8 (e revisa as Aulas 5 e 6 da Semana 3, que não teve aula).</b></p>
-  <p>API FastAPI + PostgreSQL + CRUD com <b>uploads S3/local</b> e <b>Kubernetes local com Kind</b> (vindos da Semana 3), agora também <b>publicada no Amazon ECR</b> (Aula 7) e <b>deployada no Amazon EKS</b> (Aula 8).</p>
+  <h1>CloudTask AI SaaS — Semana 6 (Aulas 11 e 12) — final da disciplina</h1>
+  <p><b>Branch <code>semana-06-cdk-final</code> — cobre as Aulas 11 e 12; consolida toda a jornada das 6 semanas.</b></p>
+  <p>API FastAPI + PostgreSQL + CRUD com <b>uploads S3/local</b>, <b>Kubernetes (Kind→EKS)</b>, <b>HPA</b> e <b>eventos (DynamoDB)</b> — agora fechando com <b>Infraestrutura como Código (AWS CDK)</b> (Aula 11) e os <b>materiais de entrega final</b> (Aula 12).</p>
 </div>
 
 <p align="center">
@@ -26,37 +26,54 @@
   <a href="https://aws.amazon.com/ecr/" title="Amazon ECR">Amazon ECR</a>
   +
   <a href="https://aws.amazon.com/eks/" title="Amazon EKS">Amazon EKS</a>
+  +
+  <a href="https://aws.amazon.com/cdk/" title="AWS CDK">AWS CDK</a>
 </p>
 
 ## O que foi feito nesta semana
 
-> 📌 **Aula combinada Semanas 3 + 4.** A Semana 3 não teve aula presencial, então
-> esta branch revisita as entregas das Aulas 5 e 6 (S3/uploads e Kind local) e
-> adiciona as Aulas 7 e 8 (ECR e EKS na nuvem).
+> 🎓 **Última semana da disciplina.** Esta branch parte do estado da Semana 5
+> (toda a base: CRUD, S3, Kind/EKS, HPA, DynamoDB) e fecha com **IaC** e a
+> **entrega final**. Versão da API: **`0.6.0`**.
 
-### Aula 7 — Publicar imagem no Amazon ECR
+### Aula 11 — Infraestrutura como Código (AWS CDK)
 
-- `scripts/build-and-push-ecr.sh` — script idempotente que cria o repo, faz login,
-  builda a imagem `--target prod`, taggea e dá `push` no ECR.
-- `buildspec.yml` — equivalente para o AWS CodeBuild (alternativa ao build local).
-- Doc completo: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md)
-  (caminho fácil via script + caminho manual com bash e PowerShell + troubleshooting).
-- A imagem fica em `<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/cloudtask-api:latest`
-  pronta para o EKS puxar.
+- `infra/cdk/` — descreve parte da infra como **Python versionado**:
+  - `app.py` + `cdk.json` — app CDK e as 3 stacks.
+  - `stacks/storage_stack.py` — bucket **S3** privado (criptografado + versionado).
+  - `stacks/ecr_stack.py` — repositório **ECR** `cloudtask-api` (scan + lifecycle).
+  - `stacks/network_stack.py` — **VPC** 2 AZs (opcional, `nat_gateways=0` = sem custo).
+- Fecha a evolução **console → CLI → script → IaC**.
+- Doc completo: [`docs/praticas/18-cdk-iac.md`](docs/praticas/18-cdk-iac.md)
+  (`cdk synth` grátis para a aula / Learner Lab; `deploy`/`destroy` em conta própria).
 
-### Aula 8 — Deploy no Amazon EKS
+### Aula 12 — Entrega final
 
-- `infra/k8s/aws/` — manifests para o cluster EKS:
-  - `namespace.yaml`, `configmap.yaml`, `secret.example.yaml`.
-  - `postgres-deployment.yaml` + `postgres-service.yaml` — Postgres como Pod (didático).
-  - `deployment-eks.yaml` — API com imagem vinda do ECR, 2 réplicas, probes HTTP.
-  - `service-loadbalancer.yaml` — `type: LoadBalancer` (ELB público real).
-  - `ingress-optional.yaml` — alternativa ALB Ingress (Aula 12 / conta pessoal).
-  - `kustomization.yaml` — `kubectl apply -k infra/k8s/aws/` aplica tudo.
-- Doc completo: [`docs/praticas/12-eks-deploy.md`](docs/praticas/12-eks-deploy.md)
-  (cluster via `eksctl`, deploy, pegar URL do ELB, demo perda de dados, **cleanup obrigatório**).
+- `docs/entrega-final/` — materiais de consolidação:
+  - `final-architecture.md` — arquitetura final (as 6 semanas em um diagrama).
+  - `final-report-template.md` — template do relatório de entrega.
+  - `lgpd-checklist.md` — checklist LGPD + segurança.
+  - `deployment-checklist.md` — checklist de deploy + **limpeza de custos**.
 
-### Aula 5 (revisão) — Upload de arquivos (Amazon S3 + fallback local)
+---
+
+### Base herdada das semanas 1–5 (resumo)
+
+| Semana | Entregou |
+| -----: | --- |
+| 1 | FastAPI + Docker + devcontainer |
+| 2 | PostgreSQL + CRUD + `.env` + HTTPS (conceito) |
+| 3 | Uploads (S3/local) + Kubernetes local (Kind) |
+| 4 | Imagem no **ECR** + deploy no **EKS** |
+| 5 | **HPA** + custos + eventos (**DynamoDB**/JSON) |
+
+Detalhes de cada entrega anterior nas práticas `docs/praticas/` (00–17) e no
+[`docs/ROADMAP.md`](docs/ROADMAP.md).
+
+<details>
+<summary><b>Detalhe das aulas anteriores (Semanas 3–4)</b></summary>
+
+#### Aula 5 (revisão) — Upload de arquivos (Amazon S3 + fallback local)
 
 - `app/services/s3_service.py` — dois backends com a **mesma interface**:
   - `LocalStorage` (default): grava em `LOCAL_UPLOADS_DIR` no container.
@@ -93,6 +110,11 @@ FastAPI + PostgreSQL + CRUD, config `.env`, HTTPS preparado, readiness probe,
 testes (transação + savepoint), docker-compose dev/prod/test, devcontainer com
 zsh + sticky scroll + transient prompt + AWS CLI, kubectl, eksctl, Node+CDK,
 docker-outside-of-docker.
+
+> Todo o código vem com **comentários didáticos** explicando motivo, impacto e
+> risco de cada decisão.
+
+</details>
 
 > Todo o código vem com **comentários didáticos** explicando motivo, impacto e
 > risco de cada decisão.
@@ -192,13 +214,31 @@ kubectl get svc -n cloudtask api -w   # esperar o ELB ficar pronto
 
 Roteiros mastigados: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md) → [`docs/praticas/12-eks-deploy.md`](docs/praticas/12-eks-deploy.md).
 
-## O que vem na próxima semana
+## Infra como Código (Aula 11) e entrega final (Aula 12)
 
-- **Semana 5 (`semana-05-custos-nosql-logs`):** Aulas 9 e 10 — **HPA + teste de carga + Cost Explorer** e **eventos com DynamoDB**.
+```bash
+# IaC com CDK (dentro de infra/cdk/) — synth é grátis (ótimo p/ aula)
+cd infra/cdk && pip install -r requirements.txt
+cdk synth                 # gera o CloudFormation sem criar nada
+cdk deploy --all          # (conta própria) cria S3 + ECR + VPC
+cdk destroy --all         # 🔥 apaga tudo
+```
+
+Entrega final: preencha [`docs/entrega-final/final-report-template.md`](docs/entrega-final/final-report-template.md)
+e rode os checklists de [LGPD](docs/entrega-final/lgpd-checklist.md) e
+[deploy/custos](docs/entrega-final/deployment-checklist.md).
+
+## Fim da disciplina 🎓
+
+Esta é a **última semana**. A consolidação está em
+[`docs/entrega-final/final-architecture.md`](docs/entrega-final/final-architecture.md)
+(as 6 semanas em um diagrama) e no [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Referências
 
-- Issues da semana: [#7 — Aula 7](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/7) · [#8 — Aula 8](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/8) · [#5 — Aula 5](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/5) · [#6 — Aula 6](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/6)
+- Issues da semana: [#11 — Aula 11 (CDK)](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/11) · [#12 — Aula 12 (final)](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/12)
+- **CDK / IaC (Aula 11)**: [`docs/praticas/18-cdk-iac.md`](docs/praticas/18-cdk-iac.md) + stacks em `infra/cdk/`
+- **Entrega final (Aula 12)**: [`docs/entrega-final/`](docs/entrega-final/README.md)
 - Lista de tarefas: [`docs/TAREFAS.md`](docs/TAREFAS.md)
 - Setup do zero: [`docs/praticas/00-setup-inicial-e-aws-academy.md`](docs/praticas/00-setup-inicial-e-aws-academy.md)
 - **ECR**: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md) + `scripts/build-and-push-ecr.sh` + `buildspec.yml`

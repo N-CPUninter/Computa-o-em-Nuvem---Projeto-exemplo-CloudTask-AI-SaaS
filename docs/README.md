@@ -56,10 +56,24 @@ Tutoriais com comandos. Cada arquivo é um exercício prático que você pode (e
 | [`praticas/15-eventos-dynamodb.md`](praticas/15-eventos-dynamodb.md) | Aula 10: eventos/logs em DynamoDB (fallback JSON local), emissão automática no CRUD |
 | [`praticas/16-console-vs-script.md`](praticas/16-console-vs-script.md) | 🐢 Console vs Script: criar DynamoDB/EKS/Budget **na mão** pelo console (cliques + tempo) vs 1 comando — sentir por que automatizar |
 | [`praticas/17-site-estatico-s3-vs-ec2.md`](praticas/17-site-estatico-s3-vs-ec2.md) | 🌐 **Demo rápida no AWS CloudShell**: mesma página na internet por **S3 Static Website** (sem servidor, centavos) vs **EC2 + Apache** (servidor real, cobra por hora) |
+| [`praticas/18-cdk-iac.md`](praticas/18-cdk-iac.md) | Aula 11: **Infra como Código (AWS CDK)** — `cdk synth/deploy/destroy` das stacks S3/ECR/VPC em `infra/cdk/` |
 | [`praticas/99-troubleshooting.md`](praticas/99-troubleshooting.md) | Erros comuns + como resolver |
 
 > 💡 **Os práticos não dependem todos uns dos outros.** Mas se está perdido,
 > faça nesta ordem: 00 → 01 → 02 → 03 → 04. Os 05–08 vão entrando aula a aula.
+
+---
+
+## 🎓 `entrega-final/` — fechamento da disciplina (Aula 12)
+
+Materiais de consolidação e entrega.
+
+| Arquivo | Para que serve |
+| --- | --- |
+| [`entrega-final/final-architecture.md`](entrega-final/final-architecture.md) | Arquitetura final consolidada (as 6 semanas em um diagrama). |
+| [`entrega-final/final-report-template.md`](entrega-final/final-report-template.md) | **Template do relatório** de entrega — copie e preencha. |
+| [`entrega-final/lgpd-checklist.md`](entrega-final/lgpd-checklist.md) | Checklist LGPD + segurança. |
+| [`entrega-final/deployment-checklist.md`](entrega-final/deployment-checklist.md) | Checklist de deploy + **limpeza de custos**. |
 
 ---
 
@@ -109,7 +123,14 @@ docs/
     ├── 15-eventos-dynamodb.md          ← Semana 5 (Aula 10: DynamoDB/eventos)
     ├── 16-console-vs-script.md         ← Semana 5 (console na mão vs script)
     ├── 17-site-estatico-s3-vs-ec2.md   ← site estático: S3 vs EC2
+    ├── 18-cdk-iac.md                   ← Semana 6 (Aula 11: AWS CDK / IaC)
     └── 99-troubleshooting.md
+
+entrega-final/                          ← Aula 12 (fechamento)
+├── final-architecture.md
+├── final-report-template.md
+├── lgpd-checklist.md
+└── deployment-checklist.md
 ```
 
 > 🧭 **Semanas 3 e 4 são dadas juntas** (a Semana 3 não teve aula). Comece

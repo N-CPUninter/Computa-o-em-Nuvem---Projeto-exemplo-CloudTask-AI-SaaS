@@ -33,6 +33,7 @@ from collections.abc import AsyncGenerator
 from fastapi import FastAPI, Request, Response, status
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api import routes_events, routes_health, routes_tasks, routes_uploads
@@ -48,11 +49,12 @@ APP_DESCRIPTION = """\
 Mini **SaaS de gerenciamento de tarefas** construído ao longo da disciplina
 **Computação em Nuvem** (N-CPU / UNINTER).
 
-Esta é a versão da **Semana 5** (versão `0.5.0`): sobre a base das semanas
-anteriores (CRUD, `.env`, upload S3/local, Kubernetes local e deploy no
-**EKS**), adicionamos **elasticidade** com **HPA** (autoscaling) + teste de
-carga e noções de **custo** (Cost Explorer/Budgets), e **eventos/logs** em
-**NoSQL** (Amazon **DynamoDB**) com **fallback local em JSON**.
+Esta é a versão da **Semana 6** (versão `0.6.0`) — **a final da disciplina**:
+sobre toda a base anterior (CRUD, `.env`, upload S3/local, Kubernetes local,
+deploy no **EKS**, **HPA**/custos e **eventos** em **DynamoDB**), fechamos com
+**infraestrutura como código** usando **AWS CDK** (stacks de S3, ECR e VPC em
+`infra/cdk/`) e os **materiais de entrega** (arquitetura final, checklist LGPD,
+checklist de deploy/custos) em `docs/entrega-final/`.
 
 > 📌 **Eventos automáticos.** Criar/atualizar/excluir uma tarefa emite,
 > respectivamente, `task.created` / `task.updated` / `task.deleted` no event
@@ -69,8 +71,8 @@ carga e noções de **custo** (Cost Explorer/Budgets), e **eventos/logs** em
 |      2 | `semana-02-rds-vpc-seguranca`   | PostgreSQL + CRUD, config `.env`, HTTPS, docs de VPC/IAM      |
 |      3 | `semana-03-s3-kubernetes`       | Upload S3 (com fallback local), Kubernetes local (Kind)       |
 |      4 | `semana-04-eks-aws`             | Build/push para ECR, deploy no EKS (aula combinada com a Semana 3) |
-| <kbd>5</kbd> ← *você está aqui* | `semana-05-custos-nosql-logs`   | HPA + teste de carga + Cost Explorer, eventos com DynamoDB    |
-|      6 | `semana-06-cdk-final`           | AWS CDK (S3, ECR, VPC), docs finais e checklist LGPD          |
+|      5 | `semana-05-custos-nosql-logs`   | HPA + teste de carga + Cost Explorer, eventos com DynamoDB    |
+| <kbd>6</kbd> ← *você está aqui* | `semana-06-cdk-final`           | AWS CDK (S3, ECR, VPC), docs finais e checklist LGPD          |
 
 ### Tags
 
@@ -214,6 +216,20 @@ app.include_router(routes_events.router)
 #   * HSTS (Strict-Transport-Security) é enviado quando force_https e fora de
 #     desenvolvimento.
 # ---------------------------------------------------------------------------
+
+# CORSMiddleware (Aula 12): o frontend roda em OUTRO servidor (origem diferente).
+# Sem CORS, o navegador BLOQUEIA as chamadas do front para a API. Aqui liberamos
+# as origens de `CORS_ORIGINS` (default "*" = qualquer origem; ok em demo).
+# POR QUÊ allow_credentials=False com "*": o navegador proíbe combinar
+# `Access-Control-Allow-Origin: *` com credenciais; como o front não envia
+# cookies/credenciais, deixamos False e o "*" funciona.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # TrustedHostMiddleware: rejeita requisições com Host header não autorizado
 # (mitiga Host header spoofing / cache poisoning). "*" (default em dev) aceita

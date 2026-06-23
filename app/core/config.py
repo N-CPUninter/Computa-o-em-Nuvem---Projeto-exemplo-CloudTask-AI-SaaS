@@ -109,6 +109,15 @@ class Settings(BaseSettings):
         default_factory=lambda: ["*"],
     )
 
+    # Origens permitidas no CORS (Aula 12). O frontend roda em OUTRO servidor
+    # (origem diferente), então o navegador só deixa ele chamar a API se a API
+    # responder com os cabeçalhos CORS certos. Mesmo padrão CSV do trusted_hosts:
+    # CORS_ORIGINS=http://meu-front:80,http://localhost:5173  (default "*" = libera
+    # geral — ok em demo; em produção liste os domínios reais).
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["*"],
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -116,10 +125,10 @@ class Settings(BaseSettings):
         extra="ignore",  # ignora variáveis extras do ambiente (ex.: PATH)
     )
 
-    @field_validator("trusted_hosts", mode="before")
+    @field_validator("trusted_hosts", "cors_origins", mode="before")
     @classmethod
     def _split_hosts(cls, value: object) -> object:
-        """Aceita TRUSTED_HOSTS como CSV no .env (ex.: "api.exemplo.com,localhost").
+        """Aceita TRUSTED_HOSTS / CORS_ORIGINS como CSV no .env.
 
         O .env só guarda texto; aqui transformamos "a,b,c" na lista ["a","b","c"].
         """
