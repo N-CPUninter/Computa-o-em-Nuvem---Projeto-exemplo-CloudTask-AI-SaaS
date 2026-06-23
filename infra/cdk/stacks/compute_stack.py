@@ -1,7 +1,7 @@
 """ComputeStack — 3 servidores EC2 (API, Frontend, Grafana) — Aula 12.
 
 A **7ª stack**: descreve como IaC os três servidores que, no caminho "CLI", o
-``infra/servers/launch-academy.sh`` cria na mão. Mesma ideia, agora versionada
+``infra/servers/semana-06-servidores-subir.sh`` cria na mão. Mesma ideia, agora versionada
 e reproduzível com ``cdk deploy``.
 
     * **API**      (t3.small) — Docker: a API + (RDS ou Postgres local). :8000
@@ -34,7 +34,7 @@ from aws_cdk import aws_ec2 as ec2
 from constructs import Construct
 
 # AMI Amazon Linux 2023 x86_64 (us-east-1). É o id mais recente no momento da
-# escrita; troque com `ami_id=` se sua região/data diferir (o launch-academy.sh
+# escrita; troque com `ami_id=` se sua região/data diferir (o semana-06-servidores-subir.sh
 # resolve isso dinamicamente via describe-images).
 DEFAULT_AMI = "ami-00948338a4aeec604"
 

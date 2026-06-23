@@ -61,8 +61,8 @@ cdk synth
 ### 🟢 AWS Academy (Learner Lab) — sobe SEM `cdk bootstrap`  ✅ testado
 
 ```bash
-./cdk-academy.sh deploy     # synth + cloudformation deploy usando a LabRole
-./cdk-academy.sh destroy    # 🔥 apaga todas as stacks
+./semana-06-cdk-deploy.sh deploy     # synth + cloudformation deploy usando a LabRole
+./semana-06-cdk-deploy.sh destroy    # 🔥 apaga todas as stacks
 ```
 
 POR QUÊ funciona: o `cdk bootstrap`/`cdk deploy` falham no Learner Lab (criar as

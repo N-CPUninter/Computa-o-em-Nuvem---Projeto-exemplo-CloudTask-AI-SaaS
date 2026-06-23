@@ -107,7 +107,7 @@ events = EventsStack(app, f"{PREFIX}Events", env=env, tags=common_tags, synthesi
 
 # Observability depende da tabela de eventos (alarme + dashboard sobre ela).
 # Por isso é instanciada DEPOIS e recebe `events.table`. No deploy, suba a
-# EventsStack antes da ObservabilityStack (o cdk-academy.sh já faz nessa ordem).
+# EventsStack antes da ObservabilityStack (o semana-06-cdk-deploy.sh já faz nessa ordem).
 observability = ObservabilityStack(
     app,
     f"{PREFIX}Observability",
@@ -135,7 +135,7 @@ database = DatabaseStack(
 #     compute = ComputeStack(app, f"{PREFIX}Compute", env=env, tags=common_tags,
 #                            synthesizer=synthesizer, vpc=network.vpc)
 # e a API sobe um Postgres local em container (mesmo comportamento do
-# launch-academy.sh).
+# semana-06-servidores-subir.sh).
 compute = ComputeStack(
     app,
     f"{PREFIX}Compute",

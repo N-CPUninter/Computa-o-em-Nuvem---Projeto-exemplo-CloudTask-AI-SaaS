@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
-# destroy-academy.sh — termina os 3 EC2 da demo e apaga o security group.
-# Encontra tudo pela tag project=cloudtask-demo (criada pelo launch-academy.sh).
+# semana-06-servidores-destruir.sh — Semana 6 · Aula 12 — termina os 3 EC2 da demo e apaga o security group.
+# Encontra tudo pela tag project=cloudtask-demo (criada pelo semana-06-servidores-subir.sh).
 # =============================================================================
 set -euo pipefail
 REGION="${REGION:-us-east-1}"

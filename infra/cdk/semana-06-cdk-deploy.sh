@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# cdk-academy.sh — sobe/derruba as stacks CDK no AWS Academy (Learner Lab)
+# semana-06-cdk-deploy.sh — Semana 6 · Aula 11 — sobe/derruba as stacks CDK no AWS Academy (Learner Lab)
 #                  SEM precisar de `cdk bootstrap`.
 # -----------------------------------------------------------------------------
 # POR QUÊ este script existe:
@@ -14,8 +14,8 @@
 #
 # USO (dentro de infra/cdk/, no devcontainer ou no AWS CloudShell):
 #   pip install -r requirements.txt        # uma vez
-#   ./cdk-academy.sh deploy                 # cria todas as stacks
-#   ./cdk-academy.sh destroy                # apaga todas as stacks
+#   ./semana-06-cdk-deploy.sh deploy                 # cria todas as stacks
+#   ./semana-06-cdk-deploy.sh destroy                # apaga todas as stacks
 #
 # ⚠️ A ComputeStack (3 EC2) depende de Network e Database (a API lê o RDS). A
 #    ordem abaixo já garante isso. Os EC2 são baratos, mas o RDS cobra por hora —
@@ -71,7 +71,7 @@ case "${ACTION}" in
       aws cloudformation describe-stacks --stack-name "${s}" --region "${REGION}" \
         --query "Stacks[0].Outputs" --output table 2>/dev/null || true
     done
-    echo "✅ Stacks no ar. Ao terminar:  ./cdk-academy.sh destroy"
+    echo "✅ Stacks no ar. Ao terminar:  ./semana-06-cdk-deploy.sh destroy"
     ;;
   destroy)
     # Ordem INVERSA do deploy (dependentes primeiro): Database antes da Network
@@ -96,5 +96,5 @@ case "${ACTION}" in
     echo "🔥 Stacks removidas."
     ;;
   *)
-    echo "Uso: ./cdk-academy.sh [deploy|destroy]"; exit 1 ;;
+    echo "Uso: ./semana-06-cdk-deploy.sh [deploy|destroy]"; exit 1 ;;
 esac

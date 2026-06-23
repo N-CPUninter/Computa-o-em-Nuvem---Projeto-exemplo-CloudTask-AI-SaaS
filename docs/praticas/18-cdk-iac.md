@@ -45,7 +45,7 @@ Request → roda igual em qualquer conta.
 infra/cdk/
 ├── app.py                      ← ponto de entrada (instancia as stacks)
 ├── cdk.json                    ← diz ao cdk: "rode python3 app.py"
-├── cdk-academy.sh              ← sobe/derruba no Academy (sem bootstrap)
+├── semana-06-cdk-deploy.sh              ← sobe/derruba no Academy (sem bootstrap)
 ├── requirements.txt            ← aws-cdk-lib + constructs
 └── stacks/
     ├── storage_stack.py        ← bucket S3 privado (uploads)
@@ -119,9 +119,9 @@ Tem um script que faz tudo:
 ```bash
 cd infra/cdk
 pip install -r requirements.txt        # uma vez
-./cdk-academy.sh deploy                 # synth + cloudformation deploy (LabRole)
+./semana-06-cdk-deploy.sh deploy                 # synth + cloudformation deploy (LabRole)
 # ... use os recursos ...
-./cdk-academy.sh destroy                # 🔥 apaga as 3 stacks
+./semana-06-cdk-deploy.sh destroy                # 🔥 apaga as 3 stacks
 ```
 
 Ou, **manualmente** (o que o script faz por dentro):
@@ -144,7 +144,7 @@ done
 cdk bootstrap                 # uma vez por conta/região
 cdk deploy --all              # cria S3 + ECR + VPC (sem NAT = sem custo)
 ```
-> O `cdk-academy.sh` também funciona em conta própria (ele só usa a LabRole se
+> O `semana-06-cdk-deploy.sh` também funciona em conta própria (ele só usa a LabRole se
 > ela existir).
 
 ### 5.3. Conferir
@@ -173,7 +173,7 @@ Console não te dá.
 
 ```bash
 # Academy (ou conta própria) — via script:
-./cdk-academy.sh destroy
+./semana-06-cdk-deploy.sh destroy
 
 # OU, em conta própria com bootstrap:
 cdk destroy --all

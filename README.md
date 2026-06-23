@@ -197,7 +197,7 @@ credenciais reais ou LocalStack); validar manualmente.
 aws sts get-caller-identity
 
 # 2. Aula 7 — publicar imagem no ECR
-./scripts/build-and-push-ecr.sh
+./scripts/semana-04-ecr/build-push-ecr.sh
 
 # 3. Aula 8 — cluster EKS (~15 min) + deploy
 eksctl create cluster --name cloudtask-eks --region us-east-1 \
@@ -239,9 +239,10 @@ Esta é a **última semana**. A consolidação está em
 - Issues da semana: [#11 — Aula 11 (CDK)](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/11) · [#12 — Aula 12 (final)](https://github.com/N-CPUninter/Computa-o-em-Nuvem---Projeto-exemplo-CloudTask-AI-SaaS/issues/12)
 - **CDK / IaC (Aula 11)**: [`docs/praticas/18-cdk-iac.md`](docs/praticas/18-cdk-iac.md) + stacks em `infra/cdk/`
 - **Entrega final (Aula 12)**: [`docs/entrega-final/`](docs/entrega-final/README.md)
+- 📜 **Scripts (mapa por semana)**: [`scripts/README.md`](scripts/README.md)
 - Lista de tarefas: [`docs/TAREFAS.md`](docs/TAREFAS.md)
 - Setup do zero: [`docs/praticas/00-setup-inicial-e-aws-academy.md`](docs/praticas/00-setup-inicial-e-aws-academy.md)
-- **ECR**: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md) + `scripts/build-and-push-ecr.sh` + `buildspec.yml`
+- **ECR**: [`docs/praticas/11-ecr-push.md`](docs/praticas/11-ecr-push.md) + `scripts/semana-04-ecr/build-push-ecr.sh` + `buildspec.yml`
 - **EKS**: [`docs/praticas/12-eks-deploy.md`](docs/praticas/12-eks-deploy.md) + manifests em `infra/k8s/aws/`
 - **Kubernetes Kind (Aula 6)**: [`docs/praticas/10-kubernetes-kind-local.md`](docs/praticas/10-kubernetes-kind-local.md) + manifests em `infra/k8s/`
 - **S3 (Aula 5)**: [`docs/conceitos/s3-efs-datalake.md`](docs/conceitos/s3-efs-datalake.md)

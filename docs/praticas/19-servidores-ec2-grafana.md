@@ -75,7 +75,7 @@ código (Secrets Manager, como o RDS já faz).
 O jeito mais direto de ver tudo no ar. Na raiz do repositório:
 
 ```bash
-bash infra/servers/launch-academy.sh
+bash infra/servers/semana-06-servidores-subir.sh
 ```
 
 O script: acha a AMI Amazon Linux 2023 mais nova, cria um **security group**
@@ -105,7 +105,7 @@ não há divergência entre o caminho A e o B.
 ```bash
 cd infra/cdk
 cat cdk.out/CloudTaskCompute.template.json   # (depois do synth) só p/ espiar
-./cdk-academy.sh deploy                       # sobe TODAS as stacks, em ordem
+./semana-06-cdk-deploy.sh deploy                       # sobe TODAS as stacks, em ordem
 ```
 
 Diferença importante do caminho B: como a `DatabaseStack` (RDS) sobe antes, a
@@ -145,10 +145,10 @@ min).
 
 ```bash
 # Caminho A (script):
-bash infra/servers/destroy-academy.sh
+bash infra/servers/semana-06-servidores-destruir.sh
 
 # Caminho B (CDK):
-cd infra/cdk && ./cdk-academy.sh destroy
+cd infra/cdk && ./semana-06-cdk-deploy.sh destroy
 ```
 
 Confira no Console (EC2 → Instances; RDS → Databases) que **nada** ficou

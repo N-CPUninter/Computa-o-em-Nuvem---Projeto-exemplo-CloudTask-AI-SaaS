@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# launch-academy.sh — sobe os 3 servidores (API, Frontend, Grafana) no AWS
+# semana-06-servidores-subir.sh — Semana 6 · Aula 12 — sobe os 3 servidores (API, Frontend, Grafana) no AWS
 # Academy/Learner Lab usando SOMENTE a AWS CLI (sem CDK, sem CloudFormation).
 # -----------------------------------------------------------------------------
 # É o caminho "rápido e didático": cada servidor é um EC2 na VPC default, com o
@@ -12,9 +12,9 @@
 #   Grafana  : EC2 t3.small  — Grafana + datasource CloudWatch porta 3000
 #
 # USO (com o Learner Lab "Start" e as credenciais já no ~/.aws):
-#   bash infra/servers/launch-academy.sh
+#   bash infra/servers/semana-06-servidores-subir.sh
 #
-# Derrubar tudo depois:  bash infra/servers/destroy-academy.sh
+# Derrubar tudo depois:  bash infra/servers/semana-06-servidores-destruir.sh
 #
 # Pré-requisitos: aws cli, gzip e base64 no PATH (Git Bash no Windows já tem).
 # =============================================================================
