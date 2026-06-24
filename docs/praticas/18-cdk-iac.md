@@ -68,16 +68,31 @@ existe (segurança, custo, limpeza).
 
 ---
 
-## 3. Instalar as dependências (uma vez)
+## 3. Dependências (no devcontainer já vêm prontas)
+
+No **devcontainer**, o `post-create.sh` já instala o **CLI do CDK** e a lib
+**`aws-cdk-lib`** (Python). Você **não precisa de `venv`** nem instalar nada — só
+conferir:
 
 ```bash
 cd infra/cdk
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cdk --version          # confirma que o cdk está no PATH
+cdk --version                                  # o CLI do CDK
+python3 -c "import aws_cdk; print('aws-cdk-lib OK')"
 ```
 
-> 🪟 **PowerShell:** ative o venv com `.venv\Scripts\Activate.ps1`.
+> ⚠️ **Rode tudo como o usuário normal — nunca com `sudo`.** As credenciais da
+> AWS e as libs do CDK ficam no **seu** usuário (`~/.aws`, `~/.local`); com
+> `sudo` o deploy dá `NoCredentials` e o `cdk` não acha a lib.
+>
+> Se faltar a lib (ex.: container recém-recriado), o próprio
+> `semana-06-cdk-deploy.sh` instala antes do `synth`. À mão:
+> `python3 -m pip install -r requirements.txt` (**sem** `--user` — o pip escolhe
+> o destino certo sozinho).
+
+> 🖥️ **Na sua própria máquina (fora do devcontainer):** aí sim vale um ambiente
+> isolado:
+> `python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+> (PowerShell: `.venv\Scripts\Activate.ps1`).
 
 ---
 

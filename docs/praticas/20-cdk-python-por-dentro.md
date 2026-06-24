@@ -174,7 +174,7 @@ Academy.
 
 ```bash
 cd infra/cdk
-source .venv/Scripts/activate      # ou: source .venv/bin/activate (Linux/Mac)
+# (no devcontainer as libs já vêm prontas — sem venv; rode como usuário normal)
 
 # 1. sintetizar TODAS as stacks
 cdk synth >/dev/null && ls cdk.out/*.template.json
